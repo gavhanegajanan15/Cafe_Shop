@@ -1,0 +1,830 @@
+{% extends 'menu/base.html' %}
+{% block content %}
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=Montserrat:wght@300;400;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<style>
+    .gallery-contact-page {
+        padding: 80px 20px 50px;
+        max-width: 1200px;
+        margin: 0 auto;
+        min-height: calc(100vh - 200px);
+    }
+    
+    .page-header {
+        text-align: center;
+        margin-bottom: 50px;
+        opacity: 0;
+        transform: translateY(30px);
+        animation: fadeInUp 1s ease forwards;
+    }
+    
+    .page-title {
+        font-family: 'Playfair Display', serif;
+        font-size: 3.2rem;
+        color: #6f4e37;
+        margin-bottom: 15px;
+    }
+    
+    .page-subtitle {
+        font-size: 1.2rem;
+        color: #777;
+        max-width: 600px;
+        margin: 0 auto;
+    }
+    
+    .gallery-contact-container {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 40px;
+        margin-bottom: 50px;
+    }
+    
+    /* Special Offers Section */
+    .offers-section {
+        grid-column: 1 / -1;
+        background: linear-gradient(135deg, #6f4e37 0%, #3a1c00 100%);
+        padding: 30px;
+        border-radius: 15px;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+        opacity: 0;
+        transform: translateY(30px);
+        animation: fadeInUp 1s ease forwards 0.4s;
+        margin-bottom: 40px;
+        color: white;
+        position: relative;
+        overflow: hidden;
+    }
+    
+    .offers-section::before {
+        content: '';
+        position: absolute;
+        top: -50%;
+        right: -50%;
+        width: 100%;
+        height: 200%;
+        background: radial-gradient(circle, rgba(212, 167, 106, 0.1) 0%, transparent 70%);
+        transform: rotate(15deg);
+    }
+    
+    .offers-header {
+        text-align: center;
+        margin-bottom: 25px;
+        position: relative;
+        z-index: 2;
+    }
+    
+    .offers-title {
+        font-family: 'Playfair Display', serif;
+        font-size: 2.2rem;
+        color: #d4a76a;
+        margin-bottom: 10px;
+    }
+    
+    .offers-subtitle {
+        font-size: 1.1rem;
+        color: rgba(255, 255, 255, 0.8);
+    }
+    
+    .offer-cards {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+        gap: 20px;
+        position: relative;
+        z-index: 2;
+    }
+    
+    .offer-card {
+        background: rgba(255, 255, 255, 0.1);
+        backdrop-filter: blur(10px);
+        border-radius: 12px;
+        padding: 25px;
+        border: 1px solid rgba(212, 167, 106, 0.3);
+        transition: all 0.3s ease;
+        text-align: center;
+    }
+    
+    .offer-card:hover {
+        transform: translateY(-5px);
+        background: rgba(255, 255, 255, 0.15);
+        box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+    }
+    
+    .offer-card.featured {
+        background: linear-gradient(135deg, #d4a76a 0%, #b38746 100%);
+        color: #3a1c00;
+        border: none;
+    }
+    
+    .offer-icon {
+        font-size: 2.5rem;
+        margin-bottom: 15px;
+        color: #d4a76a;
+    }
+    
+    .offer-card.featured .offer-icon {
+        color: #3a1c00;
+    }
+    
+    .offer-card-title {
+        font-family: 'Playfair Display', serif;
+        font-size: 1.5rem;
+        margin-bottom: 10px;
+    }
+    
+    .offer-card-desc {
+        font-size: 0.95rem;
+        margin-bottom: 15px;
+        opacity: 0.9;
+    }
+    
+    .promo-code {
+        display: inline-block;
+        background: rgba(255, 255, 255, 0.2);
+        padding: 8px 15px;
+        border-radius: 30px;
+        font-weight: 700;
+        letter-spacing: 1px;
+        margin-top: 10px;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        position: relative;
+    }
+    
+    .promo-code:hover {
+        background: rgba(255, 255, 255, 0.3);
+        transform: scale(1.05);
+    }
+    
+    .offer-card.featured .promo-code {
+        background: rgba(58, 28, 0, 0.2);
+        color: #3a1c00;
+    }
+    
+    .offer-card.featured .promo-code:hover {
+        background: rgba(58, 28, 0, 0.3);
+    }
+    
+    .copy-tooltip {
+        position: absolute;
+        bottom: 100%;
+        left: 50%;
+        transform: translateX(-50%);
+        background: #333;
+        color: white;
+        padding: 5px 10px;
+        border-radius: 4px;
+        font-size: 0.8rem;
+        margin-bottom: 5px;
+        opacity: 0;
+        visibility: hidden;
+        transition: all 0.3s ease;
+    }
+    
+    .copy-tooltip::after {
+        content: '';
+        position: absolute;
+        top: 100%;
+        left: 50%;
+        transform: translateX(-50%);
+        border-width: 5px;
+        border-style: solid;
+        border-color: #333 transparent transparent transparent;
+    }
+    
+    .promo-code:hover .copy-tooltip {
+        opacity: 1;
+        visibility: visible;
+    }
+    
+    .offer-terms {
+        text-align: center;
+        font-size: 0.8rem;
+        opacity: 0.7;
+        margin-top: 20px;
+        position: relative;
+        z-index: 2;
+    }
+    
+    /* Gallery Styles */
+    .gallery-section {
+        background: #f9f6f1;
+        padding: 30px;
+        border-radius: 15px;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+        opacity: 0;
+        transform: translateX(-50px);
+        animation: fadeInRight 1s ease forwards 0.3s;
+        border-left: 5px solid #d4a76a;
+        height: fit-content;
+    }
+    
+    .gallery-section h3 {
+        font-family: 'Playfair Display', serif;
+        color: #6f4e37;
+        margin-bottom: 25px;
+        font-size: 1.8rem;
+        text-align: center;
+    }
+    
+    .mini-gallery {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 15px;
+    }
+    
+    .mini-gallery-item {
+        position: relative;
+        border-radius: 10px;
+        overflow: hidden;
+        height: 120px;
+        cursor: pointer;
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        transition: transform 0.3s ease;
+    }
+    
+    .mini-gallery-item:hover {
+        transform: scale(1.05);
+    }
+    
+    .mini-gallery-image {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+    }
+    
+    .mini-gallery-overlay {
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        background: linear-gradient(transparent, rgba(58, 28, 0, 0.8));
+        padding: 10px;
+        color: white;
+        font-size: 0.8rem;
+        text-align: center;
+    }
+    
+    .view-more-btn {
+        display: block;
+        text-align: center;
+        margin-top: 20px;
+        background: #d4a76a;
+        color: #3a1c00;
+        padding: 10px 20px;
+        border-radius: 30px;
+        text-decoration: none;
+        font-weight: 600;
+        transition: all 0.3s ease;
+    }
+    
+    .view-more-btn:hover {
+        background: #6f4e37;
+        color: white;
+        transform: translateY(-3px);
+    }
+    
+    /* Contact Form Styles */
+    .contact-section {
+        background: #f9f6f1;
+        padding: 30px;
+        border-radius: 15px;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+        opacity: 0;
+        transform: translateX(50px);
+        animation: fadeInLeft 1s ease forwards 0.3s;
+        border-right: 5px solid #d4a76a;
+        height: fit-content;
+    }
+    
+    .contact-section h3 {
+        font-family: 'Playfair Display', serif;
+        color: #6f4e37;
+        margin-bottom: 25px;
+        font-size: 1.8rem;
+        text-align: center;
+    }
+    
+    .form-group {
+        margin-bottom: 20px;
+        opacity: 0;
+        transform: translateY(20px);
+        animation: fadeInUp 0.8s ease forwards;
+    }
+    
+    .form-group:nth-child(1) { animation-delay: 0.4s; }
+    .form-group:nth-child(2) { animation-delay: 0.5s; }
+    .form-group:nth-child(3) { animation-delay: 0.6s; }
+    .form-group:nth-child(4) { animation-delay: 0.7s; }
+    .form-group:nth-child(5) { animation-delay: 0.8s; }
+    .form-group:nth-child(6) { animation-delay: 0.9s; }
+    
+    .form-group label {
+        display: block;
+        margin-bottom: 8px;
+        font-weight: 600;
+        color: #3a1c00;
+    }
+    
+    .form-group input, .form-group textarea, .form-group select {
+        width: 100%;
+        padding: 12px;
+        border: 2px solid #e0d5c5;
+        border-radius: 8px;
+        font-family: 'Montserrat', sans-serif;
+        font-size: 1rem;
+        transition: all 0.3s ease;
+        background: white;
+    }
+    
+    .form-group input:focus, .form-group textarea:focus, .form-group select:focus {
+        border-color: #d4a76a;
+        outline: none;
+        box-shadow: 0 0 0 3px rgba(212, 167, 106, 0.2);
+    }
+    
+    .form-group textarea {
+        min-height: 120px;
+        resize: vertical;
+    }
+    
+    .submit-btn {
+        display: block;
+        width: 100%;
+        background: #d4a76a;
+        color: #3a1c00;
+        padding: 14px;
+        border: none;
+        border-radius: 8px;
+        font-family: 'Montserrat', sans-serif;
+        font-size: 1.1rem;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        box-shadow: 0 5px 15px rgba(212, 167, 106, 0.3);
+    }
+    
+    .submit-btn:hover {
+        background: #6f4e37;
+        color: white;
+        transform: translateY(-3px);
+        box-shadow: 0 8px 20px rgba(111, 78, 55, 0.4);
+    }
+    
+    /* Contact Info Styles */
+    .contact-info-section {
+        grid-column: 1 / -1;
+        background: #f9f6f1;
+        padding: 30px;
+        border-radius: 15px;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+        opacity: 0;
+        transform: translateY(30px);
+        animation: fadeInUp 1s ease forwards 0.6s;
+        border-top: 5px solid #d4a76a;
+    }
+    
+    .contact-info-section h3 {
+        font-family: 'Playfair Display', serif;
+        color: #6f4e37;
+        margin-bottom: 25px;
+        font-size: 1.8rem;
+        text-align: center;
+    }
+    
+    .contact-info-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        gap: 30px;
+    }
+    
+    .contact-detail {
+        display: flex;
+        align-items: flex-start;
+        margin-bottom: 20px;
+        transition: transform 0.3s ease;
+    }
+    
+    .contact-detail:hover {
+        transform: translateX(5px);
+    }
+    
+    .contact-detail i {
+        font-size: 1.5rem;
+        color: #d4a76a;
+        margin-right: 15px;
+        min-width: 30px;
+        padding-top: 5px;
+    }
+    
+    .contact-detail-content p {
+        margin: 0;
+        color: #555;
+    }
+    
+    .contact-detail-content p:first-child {
+        font-weight: 600;
+        color: #3a1c00;
+        margin-bottom: 5px;
+    }
+    
+    .social-links {
+        display: flex;
+        justify-content: center;
+        gap: 15px;
+        margin-top: 30px;
+    }
+    
+    .social-links a {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 45px;
+        height: 45px;
+        background: #d4a76a;
+        color: #3a1c00;
+        border-radius: 50%;
+        font-size: 1.2rem;
+        transition: all 0.3s ease;
+        text-decoration: none;
+    }
+    
+    .social-links a:hover {
+        transform: translateY(-5px);
+        background: #6f4e37;
+        color: white;
+    }
+    
+    .map-container {
+        margin-top: 30px;
+        text-align: center;
+    }
+    
+    .map-container h4 {
+        font-family: 'Playfair Display', serif;
+        color: #6f4e37;
+        margin-bottom: 15px;
+        font-size: 1.5rem;
+    }
+    
+    .map-placeholder {
+        height: 250px;
+        background: linear-gradient(rgba(0, 0, 0, 0.1), rgba(0, 0, 0, 0.1)), url('https://images.unsplash.com/photo-1542744095-fcf48d80b0fd?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80') center/cover;
+        border-radius: 15px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: white;
+        font-weight: 600;
+        font-size: 1.1rem;
+        text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.5);
+        box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+    }
+    
+    /* Animations */
+    @keyframes fadeInUp {
+        from {
+            opacity: 0;
+            transform: translateY(30px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+    
+    @keyframes fadeInRight {
+        from {
+            opacity: 0;
+            transform: translateX(-50px);
+        }
+        to {
+            opacity: 1;
+            transform: translateX(0);
+        }
+    }
+    
+    @keyframes fadeInLeft {
+        from {
+            opacity: 0;
+            transform: translateX(50px);
+        }
+        to {
+            opacity: 1;
+            transform: translateX(0);
+        }
+    }
+    
+    /* Responsive adjustments */
+    @media (max-width: 968px) {
+        .gallery-contact-container {
+            grid-template-columns: 1fr;
+            gap: 30px;
+        }
+        
+        .gallery-section, .contact-section {
+            transform: none;
+            animation: fadeInUp 1s ease forwards 0.3s;
+        }
+        
+        .mini-gallery {
+            grid-template-columns: repeat(3, 1fr);
+        }
+        
+        .offer-cards {
+            grid-template-columns: 1fr;
+        }
+    }
+    
+    @media (max-width: 768px) {
+        .gallery-contact-page {
+            padding: 70px 15px 40px;
+        }
+        
+        .page-title {
+            font-size: 2.5rem;
+        }
+        
+        .mini-gallery {
+            grid-template-columns: repeat(2, 1fr);
+        }
+        
+        .contact-info-grid {
+            grid-template-columns: 1fr;
+        }
+        
+        .gallery-section, .contact-section, .contact-info-section, .offers-section {
+            padding: 20px 15px;
+        }
+        
+        .map-placeholder {
+            height: 200px;
+        }
+        
+        .offers-title {
+            font-size: 1.8rem;
+        }
+    }
+</style>
+
+<div class="gallery-contact-page">
+    <div class="page-header">
+        <h1 class="page-title">Contact & Order</h1>
+        <p class="page-subtitle">Explore our delicious offerings and get in touch with us</p>
+    </div>
+    
+    <!-- Special Offers Section -->
+    <div class="offers-section">
+        <div class="offers-header">
+            <h2 class="offers-title">Special Offers</h2>
+            <p class="offers-subtitle">Enjoy these exclusive deals just for you!</p>
+        </div>
+        
+        <div class="offer-cards">
+            <div class="offer-card featured">
+                <i class="fas fa-gift offer-icon"></i>
+                <h3 class="offer-card-title">Welcome Offer</h3>
+                <p class="offer-card-desc">Get 15% off on your first order with code:</p>
+                <div class="promo-code" id="welcomePromo">
+                    WELCOME15
+                    <span class="copy-tooltip">Click to copy</span>
+                </div>
+            </div>
+            
+            <div class="offer-card">
+                <i class="fas fa-coffee offer-icon"></i>
+                <h3 class="offer-card-title">Coffee Lovers</h3>
+                <p class="offer-card-desc">Buy any 2 coffees and get 1 free</p>
+                <div class="promo-code">
+                    COFFEELOVER
+                    <span class="copy-tooltip">Click to copy</span>
+                </div>
+            </div>
+            
+            <div class="offer-card">
+                <i class="fas fa-utensils offer-icon"></i>
+                <h3 class="offer-card-title">Weekend Special</h3>
+                <p class="offer-card-desc">20% off on all meals every weekend</p>
+                <div class="promo-code">
+                    WEEKEND20
+                    <span class="copy-tooltip">Click to copy</span>
+                </div>
+            </div>
+        </div>
+        
+        <p class="offer-terms">* Offers cannot be combined. Valid until the end of the month.</p>
+    </div>
+    
+    <div class="gallery-contact-container">
+        <!-- Gallery Section -->
+        <div class="gallery-section">
+            <h3>Our Gallery</h3>
+            <div class="mini-gallery">
+                <div class="mini-gallery-item">
+                    <img src="https://images.unsplash.com/photo-1554118811-1e0d58224f24?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80" alt="Coffee" class="mini-gallery-image">
+                    <div class="mini-gallery-overlay">Coffee</div>
+                </div>
+                <div class="mini-gallery-item">
+                    <img src="https://images.unsplash.com/photo-1513104890138-7c749659a591?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80" alt="Pizza" class="mini-gallery-image">
+                    <div class="mini-gallery-overlay">Pizza</div>
+                </div>
+                <div class="mini-gallery-item">
+                    <img src="https://images.unsplash.com/photo-1565299624946-b28f40a0ae38?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80" alt="Pasta" class="mini-gallery-image">
+                    <div class="mini-gallery-overlay">Pasta</div>
+                </div>
+                <div class="mini-gallery-item">
+                    <img src="https://images.unsplash.com/photo-1563729784474-d77dbb933a9e?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80" alt="Dessert" class="mini-gallery-image">
+                    <div class="mini-gallery-overlay">Dessert</div>
+                </div>
+            </div>
+            <a href="{% url 'gallery' %}" class="view-more-btn">View Full Gallery</a>
+        </div>
+        
+        <!-- Contact Form Section -->
+        <div class="contact-section">
+            <h3>Quick Contact</h3>
+            <form method="POST">
+                {% csrf_token %}
+                
+                <div class="form-group">
+                    <label for="name">Your Name</label>
+                    <input type="text" id="name" name="name" placeholder="Enter your name" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="email">Email Address</label>
+                    <input type="email" id="email" name="email" placeholder="Enter your email" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="phone">Phone Number</label>
+                    <input type="text" id="phone" name="phone" placeholder="Enter your phone number" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="item">What would you like to order?</label>
+                    <select id="item" name="item" required>
+                        <option value="" disabled selected>Select an item</option>
+                        <option value="Masala Dosa">Masala Dosa</option>
+                        <option value="Butter Chicken">Butter Chicken</option>
+                        <option value="Pani Puri">Pani Puri</option>
+                        <option value="Biryani">Biryani</option>
+                        <option value="Masala Chai">Masala Chai</option>
+                        <option value="Mango Lassi">Mango Lassi</option>
+                        <option value="Filter Coffee">Filter Coffee</option>
+                        <option value="Pizza">Pizza</option>
+                        <option value="Cold Coffee">Cold Coffee</option>
+                        <option value="donut">Donut</option>
+                        <option value="Muffin">Muffin</option>
+                        <option value="Pestries">Pestries </option>
+                        
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <label for="promo_code">Promo Code (Optional)</label>
+                    <input type="text" id="promo_code" name="promo_code" placeholder="Enter promo code">
+                </div>
+                
+                <div class="form-group">
+                    <label for="message">Message</label>
+                    <textarea id="message" name="message" placeholder="Tell us about your order or any special requests"></textarea>
+                </div>
+                
+                <button type="submit" class="submit-btn">Send Message</button>
+            </form>
+        </div>
+        
+        <!-- Contact Info Section -->
+        <div class="contact-info-section">
+            <h3>Contact Information</h3>
+            
+            <div class="contact-info-grid">
+                <div>
+                    <div class="contact-detail">
+                        <i class="fas fa-map-marker-alt"></i>
+                        <div class="contact-detail-content">
+                            <p>Address</p>
+                            <p>Vasud Road, Sangola</p>
+                        </div>
+                    </div>
+                    
+                    <div class="contact-detail">
+                        <i class="fas fa-phone"></i>
+                        <div class="contact-detail-content">
+                            <p>Phone</p>
+                            <p>+91 8432041253</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <div>
+                    <div class="contact-detail">
+                        <i class="fas fa-envelope"></i>
+                        <div class="contact-detail-content">
+                            <p>Email</p>
+                            <p>info@cafehouse</p>
+                        </div>
+                    </div>
+                    
+                    <div class="contact-detail">
+                        <i class="fas fa-clock"></i>
+                        <div class="contact-detail-content">
+                            <p>Opening Hours</p>
+                            <p>Monday-Friday: 7am-8pm</p>
+                            <p>Saturday-Sunday: 8am-9pm</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            
+            
+            <div class="map-container">
+                <h4>Find Us</h4>
+               
+                <iframe style="height: 175px; border-radius: 20px; border-top-color:#ffb13b; border-top-width: 5px;" src="https://www.google.com/maps/embed?pb=!1m10!1m8!1m3!1d1153.7837032820653!2d75.18852579901267!3d17.43264008983295!3m2!1i1024!2i768!4f13.1!5e1!3m2!1sen!2sin!4v1756204391256!5m2!1sen!2sin" width="600" height="450" style="border:0;" allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
+                
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Add animation to form elements when they come into view
+        const formGroups = document.querySelectorAll('.form-group');
+        
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.style.animationPlayState = 'running';
+                    observer.unobserve(entry.target);
+                }
+            });
+        }, { threshold: 0.1 });
+        
+        formGroups.forEach(group => {
+            observer.observe(group);
+        });
+        
+        // Form submission feedback
+        const form = document.querySelector('form');
+        if (form) {
+            form.addEventListener('submit', function(e) {
+                const submitBtn = this.querySelector('.submit-btn');
+                submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Sending...';
+                submitBtn.disabled = true;
+                
+                // In a real application, you would await the form submission
+                // This is just for visual feedback
+                setTimeout(() => {
+                    submitBtn.innerHTML = '<i class="fas fa-check"></i> Message Sent!';
+                    submitBtn.style.background = '#4CAF50';
+                }, 1500);
+            });
+        }
+        
+        // Copy promo code functionality
+        const promoElements = document.querySelectorAll('.promo-code');
+        promoElements.forEach(promo => {
+            promo.addEventListener('click', function() {
+                const code = this.textContent.trim();
+                navigator.clipboard.writeText(code).then(() => {
+                    // Change tooltip text temporarily
+                    const tooltip = this.querySelector('.copy-tooltip');
+                    const originalText = tooltip.textContent;
+                    tooltip.textContent = 'Copied!';
+                    
+                    setTimeout(() => {
+                        tooltip.textContent = originalText;
+                    }, 2000);
+                });
+            });
+        });
+        
+        // Auto-fill promo code when clicking on WELCOME1
+        const welcomePromo = document.getElementById('welcomePromo');
+        if (welcomePromo) {
+            welcomePromo.addEventListener('click', function() {
+                const promoInput = document.getElementById('promo_code');
+                if (promoInput) {
+                    promoInput.value = 'WELCOME1';
+                    
+                    // Highlight the input to show it's been filled
+                    promoInput.focus();
+                    promoInput.blur(); // Remove focus but keep the highlight
+                    
+                    // Add a temporary highlight effect
+                    promoInput.style.boxShadow = '0 0 0 3px rgba(212, 167, 106, 0.5)';
+                    setTimeout(() => {
+                        promoInput.style.boxShadow = '';
+                    }, 1000);
+                }
+            });
+        }
+    });
+</script>
+{% endblock %}

@@ -1,0 +1,697 @@
+{% extends 'menu/base.html' %}
+{% load static %}
+{% block content %}
+<style>
+    /* Daily Specials Page Styles */
+    .specials-page {
+        padding: 100px 5% 50px;
+        max-width: 1200px;
+        margin: 0 auto;
+        min-height: calc(100vh - 200px);
+    }
+       
+    .page-header {
+        text-align: center;
+        margin-bottom: 60px;
+        opacity: 0;
+        transform: translateY(30px);   
+        animation: fadeInUp 1s ease forwards;
+    }
+    
+    .page-title {
+        font-family: 'Playfair Display', serif;
+        font-size: 3.5rem;
+        color: #6f4e37;
+        margin-bottom: 15px;
+        position: relative;
+        display: inline-block;
+    }
+    
+    .page-title::after {
+        content: '';
+        position: absolute;
+        bottom: -10px;
+        left: 50%;
+        transform: translateX(-50%);
+        width: 80px;
+        height: 3px;
+        background: #d4a76a;
+    }
+    
+    .page-subtitle {
+        font-size: 1.2rem;
+        color: #777;
+        max-width: 700px;
+        margin: 20px auto 0;
+    }
+    
+    .date-badge {
+        display: inline-block;
+        background: #d4a76a;
+        color: #3a1c00;
+        padding: 8px 20px;
+        border-radius: 30px;
+        font-weight: 600;
+        margin-top: 15px;
+        box-shadow: 0 4px 10px rgba(212, 167, 106, 0.3);
+    }
+    
+    /* Specials Banner */
+    .specials-banner {
+        background: linear-gradient(to right, #3a1c00, #6f4e37);
+        color: white;
+        padding: 40px;
+        border-radius: 15px;
+        margin-bottom: 60px;
+        text-align: center;
+        position: relative;
+        overflow: hidden;
+        opacity: 0;
+        transform: translateY(30px);
+    }
+    
+    .specials-banner.animate {
+        animation: fadeInUp 1s ease forwards 0.3s;
+    }
+    
+    .specials-banner::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: url('https://images.unsplash.com/photo-1414235077428-338989a2e8c0?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80') center/cover;
+        opacity: 0.15;
+        z-index: 0;
+    }
+    
+    .banner-content {
+        position: relative;
+        z-index: 2;
+    }
+    
+    .banner-title {
+        font-family: 'Playfair Display', serif;
+        font-size: 2.2rem;
+        color: #d4a76a;
+        margin-bottom: 15px;
+    }
+    
+    .banner-text {
+        font-size: 1.1rem;
+        margin-bottom: 25px;
+        max-width: 700px;
+        margin-left: auto;
+        margin-right: auto;
+    }
+    
+    .discount-badge {
+        display: inline-block;
+        background: #d4a76a;
+        color: #3a1c00;
+        padding: 12px 25px;
+        border-radius: 30px;
+        font-weight: 700;
+        font-size: 1.3rem;
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+        animation: pulse 2s infinite;
+    }
+    
+    /* Specials Grid */
+    .specials-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+        gap: 30px;
+        margin-bottom: 60px;
+    }
+    
+    .special-card {
+        background: white;
+        border-radius: 15px;
+        overflow: hidden;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+        opacity: 0;
+        transform: translateY(30px);
+        transition: all 0.3s ease;
+        position: relative;
+    }
+    
+    .special-card.animate {
+        animation: fadeInUp 1s ease forwards;
+    }
+    
+    .special-card:nth-child(1) { animation-delay: 0.4s; }
+    .special-card:nth-child(2) { animation-delay: 0.6s; }
+    .special-card:nth-child(3) { animation-delay: 0.8s; }
+    
+    .special-card:hover {
+        transform: translateY(-10px);
+        box-shadow: 0 15px 40px rgba(0, 0, 0, 0.15);
+    }
+    
+    .special-badge {
+        position: absolute;
+        top: 15px;
+        right: 15px;
+        background: #d4a76a;
+        color: #3a1c00;
+        padding: 8px 15px;
+        border-radius: 30px;
+        font-weight: 700;
+        font-size: 0.9rem;
+        z-index: 3;
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    }
+    
+    .special-image {
+        width: 100%;
+        height: 250px;
+        object-fit: cover;
+        transition: transform 0.5s ease;
+    }
+    
+    .special-card:hover .special-image {
+        transform: scale(1.05);
+    }
+    
+    .special-content {
+        padding: 25px;
+    }
+    
+    .special-title {
+        font-family: 'Playfair Display', serif;
+        color: #6f4e37;
+        margin-bottom: 10px;
+        font-size: 1.6rem;
+    }
+    
+    .special-desc {
+        color: #555;
+        margin-bottom: 20px;
+        line-height: 1.6;
+    }
+    
+    .special-meta {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-top: 20px;
+        padding-top: 20px;
+        border-top: 1px solid #eee;
+    }
+    
+    .special-price {
+        font-weight: 700;
+        color: #6f4e37;
+        font-size: 1.3rem;
+    }
+    
+    .special-old-price {
+        text-decoration: line-through;
+        color: #999;
+        font-size: 1rem;
+        margin-right: 10px;
+    }
+    
+    .order-btn {
+        background: #d4a76a;
+        color: #3a1c00;
+        padding: 10px 20px;
+        border-radius: 30px;
+        text-decoration: none;
+        font-weight: 600;
+        font-size: 0.9rem;
+        transition: all 0.3s ease;
+        border: 2px solid #d4a76a;
+    }
+    
+    .order-btn:hover {
+        background: transparent;
+        color: #d4a76a;
+    }
+    
+    /* Chef Recommendation */
+    .chef-section {
+        background: #f9f6f1;
+        padding: 60px 5%;
+        border-radius: 15px;
+        margin-bottom: 60px;
+        display: flex;
+        align-items: center;
+        gap: 40px;
+        opacity: 0;
+        transform: translateY(30px);
+    }
+    
+    .chef-section.animate {
+        animation: fadeInUp 1s ease forwards 0.5s;
+    }
+    
+    .chef-image {
+        flex: 1;
+        border-radius: 15px;
+        overflow: hidden;
+        box-shadow: 0 15px 30px rgba(0, 0, 0, 0.1);
+    }
+    
+    .chef-image img {
+        width: 100%;
+        height: 400px;
+        object-fit: cover;
+        transition: transform 0.5s ease;
+    }
+    
+    .chef-section:hover .chef-image img {
+        transform: scale(1.05);
+    }
+    
+    .chef-content {
+        flex: 1;
+    }
+    
+    .chef-title {
+        font-family: 'Playfair Display', serif;
+        color: #6f4e37;
+        margin-bottom: 20px;
+        font-size: 2rem;
+    }
+    
+    .chef-text {
+        color: #555;
+        line-height: 1.8;
+        margin-bottom: 25px;
+    }
+    
+    .chef-name {
+        font-weight: 700;
+        color: #d4a76a;
+        font-size: 1.1rem;
+    }
+    
+    .chef-role {
+        color: #777;
+        font-size: 0.9rem;
+    }
+    
+    /* Weekly Specials Preview */
+    .weekly-preview {
+        margin-bottom: 60px;
+        opacity: 0;
+        transform: translateY(30px);
+    }
+    
+    .weekly-preview.animate {
+        animation: fadeInUp 1s ease forwards 0.7s;
+    }
+    
+    .section-header {
+        text-align: center;
+        margin-bottom: 40px;
+    }
+    
+    .section-title {
+        font-family: 'Playfair Display', serif;
+        color: #6f4e37;
+        margin-bottom: 15px;
+        font-size: 2.2rem;
+    }
+    
+    .section-subtitle {
+        font-size: 1.1rem;
+        color: #777;
+        max-width: 600px;
+        margin: 0 auto;
+    }
+    
+    .week-days {
+        display: flex;
+        justify-content: space-between;
+        gap: 15px;
+        margin-top: 30px;
+    }
+    
+    .day-item {
+        flex: 1;
+        text-align: center;
+        padding: 20px 15px;
+        background: white;
+        border-radius: 10px;
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+        transition: all 0.3s ease;
+        cursor: pointer;
+    }
+    
+    .day-item:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+    }
+    
+    .day-item.active {
+        background: #6f4e37;
+        color: white;
+    }
+    
+    .day-item.active .day-name {
+        color: #d4a76a;
+    }
+    
+    .day-name {
+        font-weight: 600;
+        color: #6f4e37;
+        margin-bottom: 10px;
+        font-size: 1.1rem;
+    }
+    
+    .day-special {
+        font-size: 0.9rem;
+        color: #555;
+    }
+    
+    .day-item.active .day-special {
+        color: white;
+    }
+    
+    /* Call to Action */
+    .cta-section {
+        background: linear-gradient(to right, #3a1c00, #6f4e37);
+        color: white;
+        padding: 60px 5%;
+        border-radius: 15px;
+        text-align: center;
+        opacity: 0;
+        transform: translateY(30px);
+    }
+    
+    .cta-section.animate {
+        animation: fadeInUp 1s ease forwards 0.9s;
+    }
+    
+    .cta-title {
+        font-family: 'Playfair Display', serif;
+        color: #d4a76a;
+        margin-bottom: 20px;
+        font-size: 2.2rem;
+    }
+    
+    .cta-text {
+        font-size: 1.1rem;
+        margin-bottom: 30px;
+        max-width: 700px;
+        margin-left: auto;
+        margin-right: auto;
+    }
+    
+    .cta-buttons {
+        display: flex;
+        justify-content: center;
+        gap: 20px;
+    }
+    
+    .cta-btn {
+        display: inline-block;
+        padding: 14px 30px;
+        border-radius: 30px;
+        text-decoration: none;
+        font-weight: 600;
+        font-size: 1.1rem;
+        transition: all 0.3s ease;
+    }
+    
+    .cta-btn.primary {
+        background: #d4a76a;
+        color: #3a1c00;
+        border: 2px solid #d4a76a;
+    }
+    
+    .cta-btn.primary:hover {
+        background: transparent;
+        color: #d4a76a;
+        transform: translateY(-5px);
+    }
+    
+    .cta-btn.secondary {
+        background: transparent;
+        color: #d4a76a;
+        border: 2px solid #d4a76a;
+    }
+    
+    .cta-btn.secondary:hover {
+        background: #d4a76a;
+        color: #3a1c00;
+        transform: translateY(-5px);
+    }
+    
+    /* Animations */
+    @keyframes fadeInUp {
+        from {
+            opacity: 0;
+            transform: translateY(30px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+    
+    @keyframes pulse {
+        0% {
+            transform: scale(1);
+        }
+        50% {
+            transform: scale(1.05);
+        }
+        100% {
+            transform: scale(1);
+        }
+    }
+    
+    /* Responsive adjustments */
+    @media (max-width: 968px) {
+        .chef-section {
+            flex-direction: column;
+        }
+        
+        .week-days {
+            flex-wrap: wrap;
+        }
+        
+        .day-item {
+            flex: 0 0 calc(50% - 15px);
+            margin-bottom: 15px;
+        }
+        
+        .cta-buttons {
+            flex-direction: column;
+            align-items: center;
+        }
+    }
+    
+    @media (max-width: 768px) {
+        .specials-page {
+            padding: 80px 15px 40px;
+        }
+        
+        .page-title {
+            font-size: 2.5rem;
+        }
+        
+        .specials-grid {
+            grid-template-columns: 1fr;
+        }
+        
+        .week-days {
+            flex-direction: column;
+        }
+        
+        .special-image {
+            height: 200px;
+        }
+        
+        .banner-title {
+            font-size: 1.8rem;
+        }
+        
+        .discount-badge {
+            font-size: 1.1rem;
+        }
+    }
+</style>
+
+<div class="specials-page">
+    <div class="page-header">
+        <h1 class="page-title">Today's Specials</h1>
+        <p class="page-subtitle">Discover our chef's carefully curated selections for today</p>
+        <div class="date-badge" id="current-date"></div>
+    </div>
+    
+    <!-- Specials Banner -->
+    <div class="specials-banner">
+        <div class="banner-content">
+            <h2 class="banner-title">Weekday Exclusive Offer</h2>
+            <p class="banner-text">Enjoy our specially crafted dishes at amazing prices. Today only, get 15% off on all specials when you mention this offer!</p>
+            <div class="discount-badge">15% OFF TODAY</div>
+        </div>
+    </div>
+    
+    <!-- Specials Grid -->
+    <div class="specials-grid">
+        <div class="special-card">
+            <div class="special-badge">Chef's Pick</div>
+            <img src="https://images.unsplash.com/photo-1513104890138-7c749659a591?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80" alt="Truffle Mushroom Pizza" class="special-image">
+            <div class="special-content">
+                <h3 class="special-title">Truffle Mushroom Pizza</h3>
+                <p class="special-desc">Artisan pizza with wild mushrooms, truffle oil, mozzarella, and fresh herbs. Served with a side of arugula salad.</p>
+                <div class="special-meta">
+                    <div class="special-price">
+                        <span class="special-old-price">₹625</span>
+                        <span>₹525</span>
+                    </div>
+                    <a href="{% url 'contact' %}" class="order-btn">Order Now</a>
+                </div>
+            </div>
+        </div>
+        
+        <div class="special-card">
+            <div class="special-badge">Vegetarian</div>
+            <img src="https://images.unsplash.com/photo-1565299624946-b28f40a0ae38?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80" alt="Creamy Pasta Primavera" class="special-image">
+            <div class="special-content">
+                <h3 class="special-title">Creamy Pasta Primavera</h3>
+                <p class="special-desc">Fresh pasta with seasonal vegetables in a light cream sauce, topped with parmesan cheese and basil.</p>
+                <div class="special-meta">
+                    <div class="special-price">
+                        <span class="special-old-price">₹475</span>
+                        <span>₹395</span>
+                    </div>
+                    <a href="{% url 'contact' %}" class="order-btn">Order Now</a>
+                </div>
+            </div>
+        </div>
+        
+        <div class="special-card">
+            <div class="special-badge">New</div>
+            <img src="https://images.unsplash.com/photo-1567620905732-2d1ec7ab7445?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80" alt="Berry French Toast" class="special-image">
+            <div class="special-content">
+                <h3 class="special-title">Berry Stuffed French Toast</h3>
+                <p class="special-desc">Brioche French toast stuffed with cream cheese and berries, topped with maple syrup and powdered sugar.</p>
+                <div class="special-meta">
+                    <div class="special-price">
+                        <span class="special-old-price">₹425</span>
+                        <span>₹355</span>
+                    </div>
+                    <a href="{% url 'contact' %}" class="order-btn">Order Now</a>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Chef Recommendation -->
+    <div class="chef-section">
+        <div class="chef-image">
+            <img src="https://images.unsplash.com/photo-1583394293214-28ded15ee548?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80" alt="Chef Maria Rodriguez">
+        </div>
+        <div class="chef-content">
+            <h2 class="chef-title">Chef's Recommendation</h2>
+            <p class="chef-text">"Today's truffle mushroom pizza is one of my personal favorites. We source our mushrooms locally and the truffle oil is imported directly from Italy. The combination of flavors is simply exquisite. I recommend pairing it with our house white wine for the perfect dining experience."</p>
+            <div>
+                <div class="chef-name">Chef Rajesh Kumar</div>
+                <div class="chef-role">Head Chef, Cafe House</div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Weekly Specials Preview -->
+    <div class="weekly-preview">
+        <div class="section-header">
+            <h2 class="section-title">This Week's Specials</h2>
+            <p class="section-subtitle">Discover what's coming up this week at Cafe House</p>
+        </div>
+        
+        <div class="week-days">
+            <div class="day-item">
+                <div class="day-name">Monday</div>
+                <div class="day-special">Butter Chicken</div>
+            </div>
+            <div class="day-item">
+                <div class="day-name">Tuesday</div>
+                <div class="day-special">Pasta Special</div>
+            </div>
+            <div class="day-item active">
+                <div class="day-name">Wednesday</div>
+                <div class="day-special">Truffle Pizza</div>
+            </div>
+            <div class="day-item">
+                <div class="day-name">Thursday</div>
+                <div class="day-special">Seafood Platter</div>
+            </div>
+            <div class="day-item">
+                <div class="day-name">Friday</div>
+                <div class="day-special">BBQ Weekend</div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Call to Action -->
+    <div class="cta-section">
+        <h2 class="cta-title">Reserve Your Table</h2>
+        <p class="cta-text">Our specials are popular and tend to sell out quickly. Reserve your table now to avoid disappointment and enjoy today's exclusive offers.</p>
+        <div class="cta-buttons">
+            <a href="{% url 'book_table' %}" class="cta-btn primary">Book a Table</a>
+            <a href="{% url 'menu' %}" class="cta-btn secondary">View Full Menu</a>
+        </div>
+    </div>
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Set current date
+        const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+        const today = new Date();
+        document.getElementById('current-date').textContent = today.toLocaleDateString('en-IN', options);
+        
+        // Animation on scroll
+        const animatedElements = document.querySelectorAll('.specials-banner, .special-card, .chef-section, .weekly-preview, .cta-section');
+        
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('animate');
+                    observer.unobserve(entry.target);
+                }
+            });
+        }, { threshold: 0.1 });
+        
+        animatedElements.forEach(el => {
+            observer.observe(el);
+        });
+        
+        // Hover effect for special images
+        const specialImages = document.querySelectorAll('.special-image');
+        specialImages.forEach(img => {
+            img.addEventListener('mouseenter', () => {
+                img.style.transform = 'scale(1.05)';
+            });
+            img.addEventListener('mouseleave', () => {
+                img.style.transform = 'scale(1)';
+            });
+        });
+        
+        // Day selection for weekly specials
+        const dayItems = document.querySelectorAll('.day-item');
+        dayItems.forEach(item => {
+            item.addEventListener('click', () => {
+                dayItems.forEach(day => day.classList.remove('active'));
+                item.classList.add('active');
+            });
+        });
+        
+        // Auto-activate current day
+        const dayIndex = today.getDay(); // 0 = Sunday, 1 = Monday, etc.
+        // Adjust for our week starting on Monday
+        const adjustedIndex = dayIndex === 0 ? 6 : dayIndex - 1;
+        if (adjustedIndex >= 0 && adjustedIndex < dayItems.length) {
+            dayItems[adjustedIndex].classList.add('active');
+        }
+    });
+</script>
+{% endblock %}

@@ -1,0 +1,538 @@
+{% extends 'menu/base.html' %}
+{% load static %}
+
+{% block content %}
+<style>
+    /* About Page Styles */
+    .about-page {
+        padding: 100px 5% 50px;
+        max-width: 1200px;
+        margin: 0 auto;
+        min-height: calc(100vh - 200px);
+    }
+    
+    .page-header {
+        text-align: center;
+        margin-bottom: 60px;
+        opacity: 0;
+        transform: translateY(30px);
+        animation: fadeInUp 1s ease forwards;
+    }
+    
+    .page-title {
+        font-family: 'Playfair Display', serif;
+        font-size: 3.5rem;
+        color: #6f4e37;
+        margin-bottom: 15px;
+    }
+    
+    .page-subtitle {
+        font-size: 1.2rem;
+        color: #777;
+        max-width: 700px;
+        margin: 0 auto;
+    }
+    
+    /* Story Section */
+    .story-section {
+        display: flex;
+        align-items: center;
+        gap: 50px;
+        margin-bottom: 80px;
+    }
+    
+    .story-content {
+        flex: 1;
+        opacity: 0;
+        transform: translateX(-50px);
+    }
+    
+    .story-content.animate {
+        animation: fadeInRight 1s ease forwards;
+    }
+    
+    .story-content h2 {
+        font-family: 'Playfair Display', serif;
+        color: #6f4e37;
+        margin-bottom: 20px;
+        font-size: 2.2rem;
+    }
+    
+    .story-content p {
+        font-size: 1.1rem;
+        line-height: 1.8;
+        margin-bottom: 25px;
+        color: #555;
+    }
+    
+    .story-image {
+        flex: 1;
+        position: relative;
+        opacity: 0;
+        transform: translateX(50px);
+    }
+    
+    .story-image.animate {
+        animation: fadeInLeft 1s ease forwards;
+    }
+    
+    .main-image {
+        width: 100%;
+        border-radius: 15px;
+        box-shadow: 0 15px 30px rgba(0, 0, 0, 0.1);
+        transition: transform 0.5s ease;
+    }
+    
+    .floating-image {
+        position: absolute;
+        width: 45%;
+        border-radius: 10px;
+        box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+        transition: all 0.5s ease;
+    }
+    
+    .floating-1 {
+        top: -20px;
+        right: -20px;
+        z-index: 2;
+        animation: float 6s ease-in-out infinite;
+    }
+    
+    .floating-2 {
+        bottom: -20px;
+        left: -20px;
+        z-index: 2;
+        animation: float 7s ease-in-out infinite 1s;
+    }
+    
+    /* Team Section */
+    .team-section {
+        margin-bottom: 80px;
+    }
+    
+    .section-header {
+        text-align: center;
+        margin-bottom: 50px;
+        opacity: 0;
+        transform: translateY(30px);
+    }
+    
+    .section-header.animate {
+        animation: fadeInUp 1s ease forwards;
+    }
+    
+    .section-title {
+        font-family: 'Playfair Display', serif;
+        color: #6f4e37;
+        margin-bottom: 15px;
+        font-size: 2.5rem;
+    }
+    
+    .section-subtitle {
+        font-size: 1.1rem;
+        color: #777;
+        max-width: 600px;
+        margin: 0 auto;
+    }
+    
+    .team-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        gap: 30px;
+    }
+    
+    .team-member {
+        background: white;
+        border-radius: 15px;
+        overflow: hidden;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+        text-align: center;
+        opacity: 0;
+        transform: translateY(30px);
+        transition: transform 0.3s ease;
+    }
+    
+    .team-member.animate {
+        animation: fadeInUp 1s ease forwards;
+    }
+    
+    .team-member:hover {
+        transform: translateY(-10px);
+    }
+    
+    .team-member:nth-child(1) { animation-delay: 0.2s; }
+    .team-member:nth-child(2) { animation-delay: 0.4s; }
+    .team-member:nth-child(3) { animation-delay: 0.6s; }
+    .team-member:nth-child(4) { animation-delay: 0.8s; }
+    
+    .member-image {
+        width: 100%;
+        height: 250px;
+        object-fit: cover;
+        transition: transform 0.5s ease;
+    }
+    
+    .team-member:hover .member-image {
+        transform: scale(1.05);
+    }
+    
+    .member-info {
+        padding: 20px;
+    }
+    
+    .member-name {
+        font-family: 'Playfair Display', serif;
+        color: #6f4e37;
+        margin-bottom: 5px;
+        font-size: 1.4rem;
+    }
+    
+    .member-role {
+        color: #d4a76a;
+        font-weight: 600;
+        margin-bottom: 15px;
+    }
+    
+    .member-desc {
+        color: #555;
+        font-size: 0.95rem;
+    }
+    
+    /* Values Section */
+    .values-section {
+        margin-bottom: 80px;
+    }
+    
+    .values-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+        gap: 30px;
+    }
+    
+    .value-card {
+        background: white;
+        padding: 30px;
+        border-radius: 15px;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+        text-align: center;
+        opacity: 0;
+        transform: translateY(30px);
+        transition: transform 0.3s ease;
+        border-top: 5px solid #d4a76a;
+    }
+    
+    .value-card.animate {
+        animation: fadeInUp 1s ease forwards;
+    }
+    
+    .value-card:hover {
+        transform: translateY(-10px);
+    }
+    
+    .value-card:nth-child(1) { animation-delay: 0.2s; }
+    .value-card:nth-child(2) { animation-delay: 0.4s; }
+    .value-card:nth-child(3) { animation-delay: 0.6s; }
+    
+    .value-icon {
+        font-size: 2.5rem;
+        color: #d4a76a;
+        margin-bottom: 20px;
+    }
+    
+    .value-title {
+        font-family: 'Playfair Display', serif;
+        color: #6f4e37;
+        margin-bottom: 15px;
+        font-size: 1.5rem;
+    }
+    
+    .value-desc {
+        color: #555;
+        line-height: 1.6;
+    }
+    
+    /* Visit Section */
+    .visit-section {
+        background: linear-gradient(to right, #3a1c00, #6f4e37);
+        color: white;
+        padding: 60px 5%;
+        border-radius: 15px;
+        text-align: center;
+        opacity: 0;
+        transform: translateY(30px);
+    }
+    
+    .visit-section.animate {
+        animation: fadeInUp 1s ease forwards;
+    }
+    
+    .visit-title {
+        font-family: 'Playfair Display', serif;
+        color: #d4a76a;
+        margin-bottom: 20px;
+        font-size: 2.2rem;
+    }
+    
+    .visit-desc {
+        font-size: 1.1rem;
+        margin-bottom: 30px;
+        max-width: 700px;
+        margin-left: auto;
+        margin-right: auto;
+    }
+    
+    .visit-btn {
+        display: inline-block;
+        background: #d4a76a;
+        color: #3a1c00;
+        padding: 14px 30px;
+        border-radius: 30px;
+        text-decoration: none;
+        font-weight: 600;
+        font-size: 1.1rem;
+        transition: all 0.3s ease;
+        border: 2px solid #d4a76a;
+    }
+    
+    .visit-btn:hover {
+        background: transparent;
+        color: #d4a76a;
+        transform: translateY(-5px);
+    }
+    
+    /* Animations */
+    @keyframes fadeInUp {
+        from {
+            opacity: 0;
+            transform: translateY(30px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+    
+    @keyframes fadeInRight {
+        from {
+            opacity: 0;
+            transform: translateX(-50px);
+        }
+        to {
+            opacity: 1;
+            transform: translateX(0);
+        }
+    }
+    
+    @keyframes fadeInLeft {
+        from {
+            opacity: 0;
+            transform: translateX(50px);
+        }
+        to {
+            opacity: 1;
+            transform: translateX(0);
+        }
+    }
+    
+    @keyframes float {
+        0% {
+            transform: translateY(0px);
+        }
+        50% {
+            transform: translateY(-15px);
+        }
+        100% {
+            transform: translateY(0px);
+        }
+    }
+    
+    /* Responsive adjustments */
+    @media (max-width: 968px) {
+        .story-section {
+            flex-direction: column;
+            text-align: center;
+        }
+        
+        .story-content, .story-image {
+            transform: none;
+        }
+        
+        .story-content.animate {
+            animation: fadeInUp 1s ease forwards;
+        }
+        
+        .story-image.animate {
+            animation: fadeInUp 1s ease forwards 0.3s;
+        }
+        
+        .floating-image {
+            width: 40%;
+        }
+    }
+    
+    @media (max-width: 768px) {
+        .about-page {
+            padding: 80px 15px 40px;
+        }
+        
+        .page-title {
+            font-size: 2.5rem;
+        }
+        
+        .floating-image {
+            display: none;
+        }
+        
+        .team-grid, .values-grid {
+            grid-template-columns: 1fr;
+        }
+        
+        .section-title {
+            font-size: 2rem;
+        }
+        
+        .visit-title {
+            font-size: 1.8rem;
+        }
+    }
+</style>
+
+<div class="about-page">
+    <div class="page-header">
+        <h1 class="page-title">Our Story</h1>
+        <p class="page-subtitle">Discover the passion and tradition behind Cafe House, where every cup tells a story</p>
+    </div>
+    
+    <!-- Story Section -->
+    <section class="story-section">
+        <div class="story-content">
+            <h2>From Humble Beginnings</h2>
+            <p>Founded in 2008, Cafe House began as a small neighborhood coffee shop with a big dream: to create a community space where people could enjoy exceptional coffee and food in a warm, welcoming environment.</p>
+            <p>What started as a modest café with just six tables has grown into a beloved local institution, but our commitment to quality and community has never wavered. We still source the finest beans, craft each drink with care, and bake our pastries fresh daily.</p>
+            <p>Today, we're proud to be a gathering place for friends, families, and coffee enthusiasts who appreciate the art of a perfectly brewed cup and the comfort of a place that feels like home.</p>
+        </div>
+        
+        <div class="story-image">
+            <img src="https://images.unsplash.com/photo-1445116572660-236099ec97a0?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80" alt="Cafe Interior" class="main-image">
+            <img src="https://images.unsplash.com/photo-1559925393-8be0ec4767c8?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80" alt="Coffee Beans" class="floating-image floating-1">
+            <img src="https://images.unsplash.com/photo-1463797221720-6b07e6426c24?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80" alt="Coffee Making" class="floating-image floating-2">
+        </div>
+    </section>
+    
+    <!-- Team Section -->
+    <section class="team-section">
+        <div class="section-header">
+            <h2 class="section-title">Meet Our Team</h2>
+            <p class="section-subtitle">The passionate people behind your perfect coffee experience</p>
+        </div>
+        
+        <div class="team-grid">
+            <div class="team-member">
+                <img src="{% static 'menu/images/head.jpg' %}" alt="Head Barista" class="member-image">
+                <div class="member-info">
+                    <h3 class="member-name">Yashh Laskar</h3>
+                    <p class="member-role">Head Barista & Founder</p>
+                    <p class="member-desc">With over 15 years of experience, Rajesh brings artistry to every cup he creates.</p>
+                </div>
+            </div>
+            
+            <div class="team-member">
+                <img src="{% static 'menu/images/chef.avif' %}" alt="Pastry Chef" class="member-image">
+                <div class="member-info">
+                    <h3 class="member-name">Priya Patel</h3>
+                    <p class="member-role">Pastry Chef</p>
+                    <p class="member-desc">Priya's delicious creations have been delighting our customers since day one.</p>
+                </div>
+            </div>
+            
+            <div class="team-member">
+                <img src="{% static 'menu/images/1.jpg' %}" alt="Manager" class="member-image">
+                <div class="member-info">
+                    <h3 class="member-name">Jack Baldridge</h3>
+                    <p class="member-role">Cafe Manager</p>
+                    <p class="member-desc">Amit ensures every visitor feels welcomed and leaves with a smile.</p>
+                </div>
+            </div>
+            
+            
+        </div>
+    </section>
+    
+    <!-- Values Section -->
+    <section class="values-section">
+        <div class="section-header">
+            <h2 class="section-title">Our Values</h2>
+            <p class="section-subtitle">The principles that guide everything we do</p>
+        </div>
+        
+        <div class="values-grid">
+            <div class="value-card">
+                <i class="fas fa-seedling value-icon"></i>
+                <h3 class="value-title">Sustainability</h3>
+                <p class="value-desc">We source our coffee beans from sustainable farms that practice ethical growing methods and support local communities.</p>
+            </div>
+            
+            <div class="value-card">
+                <i class="fas fa-heart value-icon"></i>
+                <h3 class="value-title">Quality</h3>
+                <p class="value-desc">Every drink is crafted with precision and care, using only the finest ingredients to ensure an exceptional experience.</p>
+            </div>
+            
+            <div class="value-card">
+                <i class="fas fa-users value-icon"></i>
+                <h3 class="value-title">Community</h3>
+                <p class="value-desc">We believe in creating a welcoming space where people can connect, work, and create lasting memories together.</p>
+            </div>
+        </div>
+    </section>
+    
+    <!-- Visit Section -->
+    <section class="visit-section">
+        <h2 class="visit-title">Experience Cafe House</h2>
+        <p class="visit-desc">Join us for a cup of expertly crafted coffee, a delicious meal, or simply to enjoy the warm atmosphere that has made us a beloved part of the community.</p>
+        
+    </section>
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Animation on scroll
+        const animatedElements = document.querySelectorAll('.story-content, .story-image, .section-header, .team-member, .value-card, .visit-section');
+        
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('animate');
+                    observer.unobserve(entry.target);
+                }
+            });
+        }, { threshold: 0.1 });
+        
+        animatedElements.forEach(el => {
+            observer.observe(el);
+        });
+        
+        // Hover effect for team images
+        const teamImages = document.querySelectorAll('.member-image');
+        teamImages.forEach(img => {
+            img.addEventListener('mouseenter', () => {
+                img.style.transform = 'scale(1.05)';
+            });
+            img.addEventListener('mouseleave', () => {
+                img.style.transform = 'scale(1)';
+            });
+        });
+        
+        // Floating images animation
+        const floatingImages = document.querySelectorAll('.floating-image');
+        floatingImages.forEach(img => {
+            img.addEventListener('mouseenter', () => {
+                img.style.animationPlayState = 'paused';
+            });
+            img.addEventListener('mouseleave', () => {
+                img.style.animationPlayState = 'running';
+            });
+        });
+    });
+</script>
+{% endblock %}

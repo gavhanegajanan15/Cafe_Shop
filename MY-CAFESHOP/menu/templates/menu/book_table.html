@@ -1,0 +1,701 @@
+{% extends 'menu/base.html' %}
+{% load static %}
+
+{% block content %} 
+ <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=Montserrat:wght@300;400;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<style>
+    /* Booking Page Styles */
+    .booking-page {
+        padding: 100px 5% 50px;
+        max-width: 1000px;
+        margin: 0 auto;
+        min-height: calc(100vh - 200px);
+    }
+    
+    .page-header {
+        text-align: center;
+        margin-bottom: 60px;
+        opacity: 0;
+        transform: translateY(30px);
+        animation: fadeInUp 1s ease forwards;
+    }
+    
+    .page-title {
+        font-family: 'Playfair Display', serif;
+        font-size: 3.5rem;
+        color: #6f4e37;
+        margin-bottom: 15px;
+        position: relative;
+        display: inline-block;
+    }
+    
+    .page-title::after {
+        content: '';
+        position: absolute;
+        bottom: -10px;
+        left: 50%;
+        transform: translateX(-50%);
+        width: 80px;
+        height: 3px;
+        background: #d4a76a;
+    }
+    
+    .page-subtitle {
+        font-size: 1.2rem;
+        color: #777;
+        max-width: 700px;
+        margin: 20px auto 0;
+    }
+    
+    /* Booking Container */
+    .booking-container {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 40px;
+        margin-bottom: 60px;
+    }
+    
+    /* Booking Form */
+    .booking-form {
+        background: white;
+        padding: 40px;
+        border-radius: 15px;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+        opacity: 0;
+        transform: translateX(-50px);
+    }
+    
+    .booking-form.animate {
+        animation: fadeInRight 1s ease forwards;
+    }
+    
+    .form-title {
+        font-family: 'Playfair Display', serif;
+        color: #6f4e37;
+        margin-bottom: 25px;
+        font-size: 1.8rem;
+        text-align: center;
+    }
+    
+    .form-group {
+        margin-bottom: 20px;
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    
+    .form-group.animate {
+        animation: fadeInUp 0.8s ease forwards;
+    }
+    
+    .form-group:nth-child(1) { animation-delay: 0.3s; }
+    .form-group:nth-child(2) { animation-delay: 0.4s; }
+    .form-group:nth-child(3) { animation-delay: 0.5s; }
+    .form-group:nth-child(4) { animation-delay: 0.6s; }
+    .form-group:nth-child(5) { animation-delay: 0.7s; }
+    .form-group:nth-child(6) { animation-delay: 0.8s; }
+    .form-group:nth-child(7) { animation-delay: 0.9s; }
+    
+    .form-group label {
+        display: block;
+        margin-bottom: 8px;
+        font-weight: 600;
+        color: #3a1c00;
+    }
+    
+    .form-group input, .form-group select, .form-group textarea {
+        width: 100%;
+        padding: 14px;
+        border: 2px solid #e0d5c5;
+        border-radius: 8px;
+        font-family: 'Montserrat', sans-serif;
+        font-size: 1rem;
+        transition: all 0.3s ease;
+        background: white;
+    }
+    
+    .form-group input:focus, .form-group select:focus, .form-group textarea:focus {
+        border-color: #d4a76a;
+        outline: none;
+        box-shadow: 0 0 0 3px rgba(212, 167, 106, 0.2);
+    }
+    
+    .form-group textarea {
+        min-height: 100px;
+        resize: vertical;
+    }
+    
+    .submit-btn {
+        display: block;
+        width: 100%;
+        background: #d4a76a;
+        color: #3a1c00;
+        padding: 16px;
+        border: none;
+        border-radius: 8px;
+        font-family: 'Montserrat', sans-serif;
+        font-size: 1.1rem;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        box-shadow: 0 5px 15px rgba(212, 167, 106, 0.3);
+        margin-top: 10px;
+    }
+    
+    .submit-btn:hover {
+        background: #6f4e37;
+        color: white;
+        transform: translateY(-3px);
+        box-shadow: 0 8px 20px rgba(111, 78, 55, 0.4);
+    }
+    
+    /* Booking Info */
+    .booking-info {
+        background: #f9f6f1;
+        padding: 40px;
+        border-radius: 15px;
+        opacity: 0;
+        transform: translateX(50px);
+    }
+    
+    .booking-info.animate {
+        animation: fadeInLeft 1s ease forwards;
+    }
+    
+    .info-title {
+        font-family: 'Playfair Display', serif;
+        color: #6f4e37;
+        margin-bottom: 25px;
+        font-size: 1.8rem;
+        text-align: center;
+    }
+    
+    .info-item {
+        display: flex;
+        align-items: flex-start;
+        margin-bottom: 25px;
+    }
+    
+    .info-icon {
+        font-size: 1.5rem;
+        color: #d4a76a;
+        margin-right: 15px;
+        min-width: 30px;
+        padding-top: 5px;
+    }
+    
+    .info-content h3 {
+        color: #3a1c00;
+        margin-bottom: 5px;
+        font-size: 1.1rem;
+    }
+    
+    .info-content p {
+        color: #555;
+        margin: 0;
+        line-height: 1.6;
+    }
+    
+    /* Features Section */
+    .features-section {
+        margin-bottom: 60px;
+        opacity: 0;
+        transform: translateY(30px);
+    }
+    
+    .features-section.animate {
+        animation: fadeInUp 1s ease forwards 0.5s;
+    }
+    
+    .section-header {
+        text-align: center;
+        margin-bottom: 40px;
+    }
+    
+    .section-title {
+        font-family: 'Playfair Display', serif;
+        color: #6f4e37;
+        margin-bottom: 15px;
+        font-size: 2.2rem;
+    }
+    
+    .section-subtitle {
+        font-size: 1.1rem;
+        color: #777;
+        max-width: 600px;
+        margin: 0 auto;
+    }
+    
+    .features-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        gap: 30px;
+    }
+    
+    .feature-card {
+        background: white;
+        padding: 30px;
+        border-radius: 15px;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+        text-align: center;
+        transition: all 0.3s ease;
+    }
+    
+    .feature-card:hover {
+        transform: translateY(-10px);
+        box-shadow: 0 15px 40px rgba(0, 0, 0, 0.12);
+    }
+    
+    .feature-icon {
+        font-size: 2.5rem;
+        color: #d4a76a;
+        margin-bottom: 20px;
+    }
+    
+    .feature-title {
+        font-family: 'Playfair Display', serif;
+        color: #6f4e37;
+        margin-bottom: 15px;
+        font-size: 1.3rem;
+    }
+    
+    .feature-desc {
+        color: #555;
+        line-height: 1.6;
+    }
+    
+    /* FAQ Section */
+    .faq-section {
+        background: #f9f6f1;
+        padding: 60px 40px;
+        border-radius: 15px;
+        margin-bottom: 60px;
+        opacity: 0;
+        transform: translateY(30px);
+    }
+    
+    .faq-section.animate {
+        animation: fadeInUp 1s ease forwards 0.7s;
+    }
+    
+    .faq-title {
+        font-family: 'Playfair Display', serif;
+        color: #6f4e37;
+        margin-bottom: 40px;
+        font-size: 2.2rem;
+        text-align: center;
+    }
+    
+    .faq-item {
+        margin-bottom: 20px;
+        border-bottom: 1px solid #e0d5c5;
+        padding-bottom: 20px;
+    }
+    
+    .faq-question {
+        font-weight: 600;
+        color: #3a1c00;
+        margin-bottom: 10px;
+        font-size: 1.1rem;
+        cursor: pointer;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+    
+    .faq-question::after {
+        content: '\f078';
+        font-family: 'Font Awesome 5 Free';
+        font-weight: 900;
+        font-size: 0.9rem;
+        transition: transform 0.3s ease;
+    }
+    
+    .faq-item.active .faq-question::after {
+        transform: rotate(180deg);
+    }
+    
+    .faq-answer {
+        color: #555;
+        line-height: 1.6;
+        max-height: 0;
+        overflow: hidden;
+        transition: max-height 0.3s ease;
+    }
+    
+    .faq-item.active .faq-answer {
+        max-height: 200px;
+        margin-top: 15px;
+    }
+    
+    /* Animations */
+    @keyframes fadeInUp {
+        from {
+            opacity: 0;
+            transform: translateY(30px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+    
+    @keyframes fadeInRight {
+        from {
+            opacity: 0;
+            transform: translateX(-50px);
+        }
+        to {
+            opacity: 1;
+            transform: translateX(0);
+        }
+    }
+    
+    @keyframes fadeInLeft {
+        from {
+            opacity: 0;
+            transform: translateX(50px);
+        }
+        to {
+            opacity: 1;
+            transform: translateX(0);
+        }
+    }
+    
+    /* Responsive adjustments */
+    @media (max-width: 968px) {
+        .booking-container {
+            grid-template-columns: 1fr;
+            gap: 30px;
+        }
+        
+        .booking-form, .booking-info {
+            transform: none;
+        }
+        
+        .booking-form.animate {
+            animation: fadeInUp 1s ease forwards;
+        }
+        
+        .booking-info.animate {
+            animation: fadeInUp 1s ease forwards 0.3s;
+        }
+    }
+    
+    @media (max-width: 768px) {
+        .booking-page {
+            padding: 80px 15px 40px;
+        }
+        
+        .page-title {
+            font-size: 2.5rem;
+        }
+        
+        .booking-form, .booking-info {
+            padding: 25px 20px;
+        }
+        
+        .features-grid {
+            grid-template-columns: 1fr;
+        }
+        
+        .faq-section {
+            padding: 40px 20px;
+        }
+        
+        .section-title {
+            font-size: 1.8rem;
+        }
+    }
+</style>
+
+<div class="booking-page">
+    <div class="page-header">
+        <h1 class="page-title">Table Reservation</h1>
+        <p class="page-subtitle">Secure your spot at Cafe House for an unforgettable dining experience</p>
+    </div>
+    
+    <div class="booking-container">
+        <!-- Booking Form -->
+        <div class="booking-form">
+            <h2 class="form-title">Book Your Table</h2>
+            <form id="reservationForm" method="POST">
+                {% csrf_token %}
+                
+                <div class="form-group">
+                    <label for="name">Full Name</label>
+                    <input type="text" id="name" name="name" placeholder="Enter your full name" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="email">Email Address</label>
+                    <input type="email" id="email" name="email" placeholder="Enter your email" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="phone">Phone Number</label>
+                    <input type="tel" id="phone" name="phone" placeholder="Enter your phone number" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="date">Reservation Date</label>
+                    <input type="date" id="date" name="date" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="time">Reservation Time</label>
+                    <select id="time" name="time" required>
+                        <option value="" disabled selected>Select time</option>
+                        <option value="07:00">7:00 AM</option>
+                        <option value="08:00">8:00 AM</option>
+                        <option value="09:00">9:00 AM</option>
+                        <option value="10:00">10:00 AM</option>
+                        <option value="11:00">11:00 AM</option>
+                        <option value="12:00">12:00 PM</option>
+                        <option value="13:00">1:00 PM</option>
+                        <option value="14:00">2:00 PM</option>
+                        <option value="15:00">3:00 PM</option>
+                        <option value="16:00">4:00 PM</option>
+                        <option value="17:00">5:00 PM</option>
+                        <option value="18:00">6:00 PM</option>
+                        <option value="19:00">7:00 PM</option>
+                        <option value="20:00">8:00 PM</option>
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <label for="guests">Number of Guests</label>
+                    <select id="guests" name="guests" required>
+                        <option value="" disabled selected>Select number of guests</option>
+                        <option value="1">1 Person</option>
+                        <option value="2">2 People</option>
+                        <option value="3">3 People</option>
+                        <option value="4">4 People</option>
+                        <option value="5">5 People</option>
+                        <option value="6">6 People</option>
+                        <option value="7">7+ People (Please specify in notes)</option>
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <label for="special_requests">Special Requests</label>
+                    <textarea id="special_requests" name="special_requests" placeholder="Any special requests or requirements"></textarea>
+                </div>
+                
+                <button type="submit" class="submit-btn">Reserve Table</button>
+            </form>
+        </div>
+        
+        <!-- Booking Information -->
+        <div class="booking-info">
+            <h2 class="info-title">Reservation Details</h2>
+            
+            <div class="info-item">
+                <div class="info-icon">
+                    <i class="fas fa-clock"></i>
+                </div>
+                <div class="info-content">
+                    <h3>Opening Hours</h3>
+                    <p>Monday-Friday: 7am-8pm<br>Saturday-Sunday: 8am-9pm</p>
+                </div>
+            </div>
+            
+            <div class="info-item">
+                <div class="info-icon">
+                    <i class="fas fa-users"></i>
+                </div>
+                <div class="info-content">
+                    <h3>Group Bookings</h3>
+                    <p>For groups larger than 6 people, please call us directly to make arrangements.</p>
+                </div>
+            </div>
+            
+            <div class="info-item">
+                <div class="info-icon">
+                    <i class="fas fa-utensils"></i>
+                </div>
+                <div class="info-content">
+                    <h3>Special Occasions</h3>
+                    <p>Celebrating a special event? Let us know and we'll make it memorable!</p>
+                </div>
+            </div>
+            
+            <div class="info-item">
+                <div class="info-icon">
+                    <i class="fas fa-calendar-check"></i>
+                </div>
+                <div class="info-content">
+                    <h3>Confirmation</h3>
+                    <p>You'll receive a confirmation email within 24 hours of your booking request.</p>
+                </div>
+            </div>
+            
+            <div class="info-item">
+                <div class="info-icon">
+                    <i class="fas fa-phone-alt"></i>
+                </div>
+                <div class="info-content">
+                    <h3>Need Help?</h3>
+                    <p>Call us at <strong>+91 8432041253</strong> for assistance with your reservation.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Features Section -->
+    <div class="features-section">
+        <div class="section-header">
+            <h2 class="section-title">Why Reserve With Us</h2>
+            <p class="section-subtitle">Experience the Cafe House difference with our premium services</p>
+        </div>
+        
+        <div class="features-grid">
+            <div class="feature-card">
+                <div class="feature-icon">
+                    <i class="fas fa-crown"></i>
+                </div>
+                <h3 class="feature-title">Priority Seating</h3>
+                <p class="feature-desc">Guaranteed best tables for our reserved guests, even during peak hours.</p>
+            </div>
+            
+            <div class="feature-card">
+                <div class="feature-icon">
+                    <i class="fas fa-gift"></i>
+                </div>
+                <h3 class="feature-title">Special Treats</h3>
+                <p class="feature-desc">Complimentary welcome drink for all reserved guests.</p>
+            </div>
+            
+            <div class="feature-card">
+                <div class="feature-icon">
+                    <i class="fas fa-clock"></i>
+                </div>
+                <h3 class="feature-title">No Waiting</h3>
+                <p class="feature-desc">Your table will be ready at the reserved time, no waiting required.</p>
+            </div>
+            
+            <div class="feature-card">
+                <div class="feature-icon">
+                    <i class="fas fa-user-check"></i>
+                </div>
+                <h3 class="feature-title">Personalized Service</h3>
+                <p class="feature-desc">Dedicated staff attention for reserved guests throughout your visit.</p>
+            </div>
+        </div>
+    </div>
+    
+    <!-- FAQ Section -->
+    <div class="faq-section">
+        <h2 class="faq-title">Frequently Asked Questions</h2>
+        
+        <div class="faq-item">
+            <div class="faq-question">How far in advance can I make a reservation?</div>
+            <div class="faq-answer">
+                <p>You can make reservations up to 30 days in advance. For special events or large groups, please call us directly to discuss availability beyond this period.</p>
+            </div>
+        </div>
+        
+        <div class="faq-item">
+            <div class="faq-question">What is your cancellation policy?</div>
+            <div class="faq-answer">
+                <p>We understand that plans change. You can cancel your reservation free of charge up to 2 hours before your booking time. For no-shows or late cancellations, we may require a deposit for future reservations.</p>
+            </div>
+        </div>
+        
+        <div class="faq-item">
+            <div class="faq-question">Do you accommodate dietary restrictions?</div>
+            <div class="faq-answer">
+                <p>Absolutely! Please mention any dietary restrictions or allergies in the special requests section when making your reservation, and our chefs will be happy to accommodate your needs.</p>
+            </div>
+        </div>
+        
+        <div class="faq-item">
+            <div class="faq-question">Is there a time limit for tables?</div>
+            <div class="faq-answer">
+                <p>During peak hours, we kindly request that tables be returned within 2 hours. However, if we don't have waiting guests, you're welcome to enjoy your time with us for longer.</p>
+            </div>
+        </div>
+        
+        <div class="faq-item">
+            <div class="faq-question">Can I modify my reservation after booking?</div>
+            <div class="faq-answer">
+                <p>Yes, you can modify your reservation by calling us directly at least 2 hours before your booking time. Changes are subject to availability.</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Set minimum date to today
+        const today = new Date();
+        const yyyy = today.getFullYear();
+        const mm = String(today.getMonth() + 1).padStart(2, '0');
+        const dd = String(today.getDate()).padStart(2, '0');
+        const todayStr = `${yyyy}-${mm}-${dd}`;
+        document.getElementById('date').setAttribute('min', todayStr);
+        
+        // Animation on scroll
+        const animatedElements = document.querySelectorAll('.booking-form, .booking-info, .features-section, .faq-section, .form-group');
+        
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('animate');
+                    observer.unobserve(entry.target);
+                }
+            });
+        }, { threshold: 0.1 });
+        
+        animatedElements.forEach(el => {
+            observer.observe(el);
+        });
+        
+        // FAQ accordion functionality
+        const faqItems = document.querySelectorAll('.faq-item');
+        faqItems.forEach(item => {
+            const question = item.querySelector('.faq-question');
+            question.addEventListener('click', () => {
+                // Close all other items
+                faqItems.forEach(otherItem => {
+                    if (otherItem !== item) {
+                        otherItem.classList.remove('active');
+                    }
+                });
+                
+                // Toggle current item
+                item.classList.toggle('active');
+            });
+        });
+        
+        // Form submission
+        const reservationForm = document.getElementById('reservationForm');
+        if (reservationForm) {
+            reservationForm.addEventListener('submit', function(e) {
+                e.preventDefault();
+                
+                const submitBtn = this.querySelector('.submit-btn');
+                submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Processing...';
+                submitBtn.disabled = true;
+                
+                // Simulate form submission
+                setTimeout(() => {
+                    submitBtn.innerHTML = '<i class="fas fa-check"></i> Reservation Successful!';
+                    submitBtn.style.background = '#4CAF50';
+                    
+                    // Reset form after success
+                    setTimeout(() => {
+                        reservationForm.reset();
+                        submitBtn.innerHTML = 'Reserve Table';
+                        submitBtn.style.background = '';
+                        submitBtn.disabled = false;
+                        
+                        // Show success message (in a real app, this would be a proper notification)
+                        alert('Thank you! Your table reservation has been received. We will confirm your booking via email within 30 minute.');
+                    }, 2000);
+                }, 1500);
+            });
+        }
+    });
+</script>
+{% endblock %}

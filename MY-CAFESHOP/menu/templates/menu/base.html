@@ -1,0 +1,795 @@
+{% load static %}   
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CAFE HOUSE - Premium Coffee & Dining</title>
+    <link rel="stylesheet" href="{% static 'menu/css/style.css' %}">
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=Montserrat:wght@300;400;600&display=swap" rel="stylesheet">
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Montserrat', sans-serif;
+            background-color: #f9f6f1;
+            color: #333;
+            overflow-x: hidden;
+        }
+        
+        /* Header & Navigation */
+         header {
+            background: linear-gradient(to right, #3a1c00, #6f4e37);
+            color: white;
+            padding: 15px 5%;
+            position: fixed;
+            width: 100%;
+            z-index: 1000;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s ease;
+        }
+        
+        .header-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: relative;
+        }
+        
+        .logo {
+            font-family: 'Playfair Display', serif;
+            font-size: 2.2rem;
+            font-weight: 700;
+            color: #d4a76a;
+            display: flex;
+            align-items: center;
+        }
+        
+        .logo span {
+            color: white;
+        }
+        
+        .logo-icon {
+            margin-right: 10px;
+            font-size: 1.8rem;
+        }
+        
+        nav {
+            display: flex;
+            gap: 15px;
+        }
+        
+        nav a {
+            color: white;
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 1rem;
+            padding: 8px 15px;
+            border-radius: 30px;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+        
+        nav a:before {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 0;
+            height: 2px;
+            background-color: #d4a76a;
+            transition: width 0.3s ease;
+        }
+        
+        nav a:hover:before {
+            width: 100%;
+        }
+        
+        nav a:hover {
+            color: #d4a76a;
+        }
+        
+        nav a.active {
+            background-color: rgba(212, 167, 106, 0.2);
+            color: #d4a76a;
+        }
+        
+        /* Mobile menu toggle */
+        .menu-toggle {
+            display: none;
+            flex-direction: column;
+            justify-content: space-around;
+            width: 30px;
+            height: 25px;
+            cursor: pointer;
+        }
+        
+        .menu-toggle span {
+            width: 100%;
+            height: 3px;
+            background-color: #d4a76a;
+            border-radius: 5px;
+            transition: all 0.3s ease;
+        }
+        
+        /* Hero Section */
+        .hero {
+            height: 100vh;
+            background: linear-gradient(rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.6)), url('https://images.unsplash.com/photo-1554118811-1e0d58224f24?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1470&q=80') no-repeat center center/cover;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            color: white;
+            padding: 0 20px;
+            padding-top: 80px;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .hero::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 100px;
+            background: linear-gradient(to top, #f9f6f1, transparent);
+            z-index: 1;
+        }
+        
+        .hero-content {
+            max-width: 800px;
+            opacity: 0;
+            transform: translateY(50px);
+            animation: fadeInUp 1s ease forwards 0.5s;
+            z-index: 2;
+            position: relative;
+        }
+        
+        .hero h1 {
+            font-family: 'Playfair Display', serif;
+            font-size: 3.5rem;
+            margin-bottom: 20px;
+            color: #d4a76a;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+        }
+        
+        .hero p {
+            font-size: 1.3rem;
+            margin-bottom: 30px;
+            line-height: 1.6;
+        }
+        
+        .btn {
+            display: inline-block;
+            background: #d4a76a;
+            color: #3a1c00;
+            padding: 12px 28px;
+            border-radius: 30px;
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 1.1rem;
+            transition: all 0.3s ease;
+            border: 2px solid #d4a76a;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+            transition: 0.5s;
+        }
+        
+        .btn:hover::before {
+            left: 100%;
+        }
+        
+        .btn:hover {
+            background: transparent;
+            color: #d4a76a;
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.3);
+        }
+        
+        /* Table Counter Section */
+        .table-counter {
+            padding: 80px 5%;
+            background: linear-gradient(to right, #3a1c00, #6f4e37);
+            color: white;
+            text-align: center;
+            position: relative;
+        }
+        
+        .table-counter h2 {
+            font-family: 'Playfair Display', serif;
+            font-size: 2.5rem;
+            margin-bottom: 50px;
+            color: #d4a76a;
+        }
+        
+        .counter-container {
+            display: flex;
+            justify-content: center;
+            gap: 40px;
+            flex-wrap: wrap;
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+        
+        .counter-item {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 30px;
+            border-radius: 15px;
+            min-width: 200px;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(212, 167, 106, 0.3);
+            transition: all 0.3s ease;
+            opacity: 0;
+            transform: translateY(30px);
+        }
+        
+        .counter-item.animate {
+            animation: fadeInUp 0.8s ease forwards;
+        }
+        
+        .counter-item:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.2);
+        }
+        
+        .counter-number {
+            font-size: 3rem;
+            font-weight: bold;
+            color: #d4a76a;
+            margin-bottom: 10px;
+        }
+        
+        .counter-label {
+            font-size: 1.2rem;
+        }
+        
+        /* About Section */
+        .about {
+            padding: 100px 5%;
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            align-items: center;
+            gap: 50px;
+        }
+        
+        .about-content {
+            flex: 1;
+            opacity: 0;
+            transform: translateX(-50px);
+        }
+        
+        .about-content.animate {
+            animation: fadeInRight 1s ease forwards;
+        }
+        
+        .about h2 {
+            font-family: 'Playfair Display', serif;
+            font-size: 2.5rem;
+            color: #6f4e37;
+            margin-bottom: 20px;
+        }
+        
+        .about p {
+            font-size: 1.1rem;
+            line-height: 1.8;
+            margin-bottom: 30px;
+            color: #555;
+        }
+        
+        .about-image {
+            flex: 1;
+            opacity: 0;
+            transform: translateX(50px);
+            position: relative;
+        }
+        
+        .about-image.animate {
+            animation: fadeInLeft 1s ease forwards;
+        }
+        
+        .about-image img {
+            width: 100%;
+            border-radius: 15px;
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.1);
+            transition: transform 0.5s ease;
+        }
+        
+        .about-image::before {
+            content: '';
+            position: absolute;
+            top: -15px;
+            left: -15px;
+            width: 100%;
+            height: 100%;
+            border: 3px solid #d4a76a;
+            border-radius: 15px;
+            z-index: -1;
+            opacity: 0;
+            transition: all 0.5s ease;
+        }
+        
+        .about-image:hover::before {
+            opacity: 0.5;
+            top: -10px;
+            left: -10px;
+        }
+        
+        .about-image img:hover {
+            transform: scale(1.03);
+        }
+        
+        /* Specials Section */
+        .specials {
+            padding: 100px 5%;
+            background: linear-gradient(to right, #3a1c00, #6f4e37);
+            color: white;
+            text-align: center;
+        }
+        
+        .specials h2 {
+            font-family: 'Playfair Display', serif;
+            font-size: 2.5rem;
+            margin-bottom: 50px;
+            color: #d4a76a;
+        }
+        
+        .specials-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 30px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        .special-item {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 15px;
+            padding: 30px;
+            backdrop-filter: blur(10px);
+            opacity: 0;
+            transform: translateY(50px);
+            transition: all 0.3s ease;
+            border: 1px solid rgba(212, 167, 106, 0.3);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .special-item::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(45deg, transparent, rgba(212, 167, 106, 0.1), transparent);
+            transform: translateX(-100%);
+            transition: 0.5s;
+        }
+        
+        .special-item:hover::before {
+            transform: translateX(100%);
+        }
+        
+        .special-item.animate {
+            animation: fadeInUp 1s ease forwards;
+        }
+        
+        .special-item:hover {
+            transform: translateY(-10px);
+            background: rgba(255, 255, 255, 0.15);
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.2);
+        }
+        
+        .special-item:nth-child(1) {
+            animation-delay: 0.3s;
+        }
+        
+        .special-item:nth-child(2) {
+            animation-delay: 0.5s;
+        }
+        
+        .special-item:nth-child(3) {
+            animation-delay: 0.7s;
+        }
+        
+        .special-item i {
+            font-size: 2.8rem;
+            color: #d4a76a;
+            margin-bottom: 20px;
+            transition: transform 0.3s ease;
+        }
+        
+        .special-item:hover i {
+            transform: scale(1.2);
+        }
+        
+        .special-item h3 {
+            font-size: 1.6rem;
+            margin-bottom: 15px;
+        }
+        
+        /* Footer */
+        footer {
+            background: linear-gradient(to right, #3a1c00, #6f4e37);
+            color: white;
+            padding: 50px 5%;
+            text-align: center;
+        }
+        
+        .footer-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 30px;
+        }
+        
+        .footer-section h3 {
+            font-family: 'Playfair Display', serif;
+            color: #d4a76a;
+            margin-bottom: 20px;
+            font-size: 1.4rem;
+        }
+        
+        .footer-section p, .footer-section a {
+            color: #ccc;
+            margin-bottom: 10px;
+            display: block;
+            text-decoration: none;
+            transition: color 0.3s ease;
+        }
+        
+        .footer-section a:hover {
+            color: #d4a76a;
+        }
+        
+        .social-icons {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin-top: 20px;
+        }
+        
+        .social-icons a {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 40px;
+            height: 40px;
+            background: #d4a76a;
+            color: #3a1c00;
+            border-radius: 50%;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .social-icons a::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(255, 255, 255, 0.2);
+            transform: scale(0);
+            border-radius: 50%;
+            transition: all 0.3s ease;
+        }
+        
+        .social-icons a:hover::before {
+            transform: scale(1.5);
+            opacity: 0;
+        }
+        
+        .social-icons a:hover {
+            transform: translateY(-5px);
+            background: white;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+        }
+        
+        .copyright {
+            margin-top: 40px;
+            padding-top: 20px;
+            border-top: 1px solid #555;
+            color: #ccc;
+            font-size: 0.9rem;
+        }
+        
+        /* Animations */
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(50px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        @keyframes fadeInRight {
+            from {
+                opacity: 0;
+                transform: translateX(-50px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+        
+        @keyframes fadeInLeft {
+            from {
+                opacity: 0;
+                transform: translateX(50px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+        
+        /* Floating animation */
+        @keyframes float {
+            0% {
+                transform: translateY(0px);
+            }
+            50% {
+                transform: translateY(-10px);
+            }
+            100% {
+                transform: translateY(0px);
+            }
+        }
+        
+        .floating {
+            animation: float 5s ease-in-out infinite;
+        }
+        
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .header-container {
+                flex-direction: column;
+                text-align: center;
+            }
+            
+            .logo {
+                margin-bottom: 15px;
+            }
+            
+            nav {
+                margin-top: 15px;
+                flex-wrap: wrap;
+                justify-content: center;
+                gap: 10px;
+            }
+            
+            nav a {
+                font-size: 0.9rem;
+                padding: 6px 12px;
+            }
+            
+            .hero {
+                padding-top: 120px;
+            }
+            
+            .hero h1 {
+                font-size: 2.5rem;
+            }
+            
+            .hero p {
+                font-size: 1.1rem;
+            }
+            
+            .about {
+                flex-direction: column;
+                text-align: center;
+            }
+            
+            .counter-container {
+                gap: 20px;
+            }
+            
+            .counter-item {
+                min-width: 150px;
+                padding: 20px;
+            }
+            
+            .counter-number {
+                font-size: 2.5rem;
+            }
+            
+            .menu-toggle {
+                display: flex;
+            }
+            
+            nav {
+                display: none;
+                width: 100%;
+                flex-direction: column;
+            }
+            
+            nav.active {
+                display: flex;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="header-container">
+            <div class="logo">
+                <i class="fas fa-coffee logo-icon"></i>
+                <span class="accent">CAFE</span> HOUSE
+            </div>
+            <div class="menu-toggle">
+                <span></span>
+                <span></span>
+                <span></span>
+            </div>
+            <nav id="nav">
+                <a href="{% url 'home' %}" class="active">Home</a>
+                <a href="{% url 'about' %}">About</a>
+                <a href="{% url 'menu' %}">Menu</a>
+                <a href="{% url 'special' %}">Today's Special</a>
+                <a href="{% url 'gallery' %}">Gallery</a>
+                <a href="{% url 'book_table' %}">Book Table</a>
+                <a href="{% url 'contact' %}">Contact</a>
+                
+            </nav>
+        </div>
+    </header>
+    <main>
+        {% block content %}
+        <!-- Default content if no block content provided -->
+        <section class="hero">
+            <div class="hero-content">
+                <h1>Welcome to Cafe House</h1>
+                <p>Experience the perfect blend of premium coffee, delicious food, and warm ambiance. Your perfect day starts here.</p>
+                
+            </div>
+        </section>
+
+        <section class="table-counter">
+            <h2>Why Choose Us</h2>
+            <div class="counter-container">
+                <div class="counter-item">
+                    <div class="counter-number">150+</div>
+                    <div class="counter-label">Happy Customers Daily</div>
+                </div>
+                <div class="counter-item">
+                    <div class="counter-number">50+</div>
+                    <div class="counter-label">Menu Items</div>
+                </div>
+                <div class="counter-item">
+                    <div class="counter-number">15+</div>
+                    <div class="counter-label">Years of Experience</div>
+                </div>
+            </div>
+        </section>
+
+        <section class="about">
+            <div class="about-content">
+                <h2>Our Story</h2>
+                <p>Founded in 2008, Cafe House began as a small neighborhood coffee shop with a big dream: to create a community space where people could enjoy exceptional coffee and food in a warm, welcoming environment.</p>
+                <p>Today, we continue to source the finest ingredients, craft each drink with care, and bake our pastries fresh daily. We're proud to be a gathering place for friends, families, and coffee enthusiasts.</p>
+                <a href="{% url 'contact' %}" class="btn">Visit Us</a>
+            </div>
+            <div class="about-image">
+                <img src="https://images.unsplash.com/photo-1445116572660-236099ec97a0?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1471&q=80" alt="Cafe Interior">
+            </div>
+        </section>
+
+        <section class="specials">
+            <h2>Our Specialties</h2>
+            <div class="specials-container">
+                <div class="special-item">
+                    <i class="fas fa-coffee"></i>
+                    <h3>Artisan Coffee</h3>
+                    <p>Handcrafted using premium beans sourced from sustainable farms around the world.</p>
+                </div>
+                <div class="special-item">
+                    <i class="fas fa-bread-slice"></i>
+                    <h3>Fresh Bakery</h3>
+                    <p>Daily baked pastries, bread, and desserts made from scratch with local ingredients.</p>
+                </div>
+                <div class="special-item">
+                    <i class="fas fa-utensils"></i>
+                    <h3>Gourmet Dining</h3>
+                    <p>Seasonal menu featuring breakfast, lunch, and dinner options for every palate.</p>
+                </div>
+            </div>
+        </section>
+        {% endblock %}
+    </main>
+    
+    <footer>
+        <div class="footer-content">
+            <div class="footer-section">
+                <h3>Location</h3>
+                <p>Cafe Shop</p>
+                <p> Vasud Road</p>
+            </div>
+            <div class="footer-section">
+                <h3>Hours</h3>
+                <p>Monday-Friday: 7am-8pm</p>
+                <p>Saturday-Sunday: 8am-9pm</p>
+            </div>
+            <div class="footer-section">
+                <h3>Contact</h3>
+                <p>Phone: +91 8432041253</p>
+                <p>Email: info@cafehouse.com</p>
+            </div>
+          
+        </div>
+        <div class="copyright">
+            <p>&copy; 2025 Cafe House. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <script>
+        // Animation on scroll
+        document.addEventListener('DOMContentLoaded', function() {
+            const animatedElements = document.querySelectorAll('.counter-item, .about-content, .about-image, .special-item');
+            
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.classList.add('animate');
+                        observer.unobserve(entry.target);
+                    }
+                });
+            }, { threshold: 0.1 });
+            
+            animatedElements.forEach(el => {
+                observer.observe(el);
+            });
+            
+            // Mobile menu toggle
+            const menuToggle = document.querySelector('.menu-toggle');
+            const nav = document.getElementById('nav');
+            
+            if (menuToggle) {
+                menuToggle.addEventListener('click', function() {
+                    nav.classList.toggle('active');
+                });
+            }
+            
+            // Add floating animation to special items on hover
+            const specialItems = document.querySelectorAll('.special-item');
+            specialItems.forEach(item => {
+                item.addEventListener('mouseenter', () => {
+                    item.classList.add('floating');
+                });
+                item.addEventListener('mouseleave', () => {
+                    item.classList.remove('floating');
+                });
+            });
+        });
+    </script>
+</body>
+</html>

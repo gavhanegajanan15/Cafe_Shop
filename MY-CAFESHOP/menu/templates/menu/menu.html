@@ -1,0 +1,618 @@
+{% extends 'menu/base.html' %}
+{% load static %}
+{% block content %}
+<style>
+    .menu-page {
+        padding: 60px;
+        max-width: 1250px;
+        margin: 0 auto;
+    }
+    
+    .menu-header {
+        text-align: center;
+        margin-bottom: 20px;
+        padding: 20px;
+        background: linear-gradient(135deg, #6f4e37 0%, #3a1c00 100%);
+        border-radius: 10px;
+        color: white;
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+    }
+    
+    .menu-title {
+        font-family: 'Playfair Display', serif;
+        font-size: 3.5rem;
+        margin-bottom: 10px;
+        color: #d4a76a;
+        text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+    }
+    
+    .menu-subtitle {
+        font-family: 'Montserrat', sans-serif;
+        font-size: 1.2rem;
+        font-weight: 300;
+        margin-bottom: 15px;
+    }
+    
+    .menu-divider {
+        height: 3px;
+        width: 80px;
+        background: #d4a76a;
+        margin: 0 auto;
+    }
+    
+    .menu-container {
+        background: white;
+        border-radius: 15px;
+        box-shadow: 0 10px 25px rgba(0, 0, 0, 0.08);
+        overflow: hidden;
+        margin-bottom: 40px;
+    }
+    
+    .menu-categories {
+        display: flex;
+        justify-content: center;
+        background: #f5f2eb;
+        padding: 15px;
+        flex-wrap: wrap;
+        gap: 10px;
+    }
+    
+    .category-btn {
+        background: transparent;
+        border: 2px solid #6f4e37;
+        padding: 10px 25px;
+        font-size: 1.1rem;
+        cursor: pointer;
+        border-radius: 30px;
+        transition: all 0.3s ease;
+        color: #6f4e37;
+        font-weight: 600;
+    }
+    
+    .category-btn.active, .category-btn:hover {
+        background: #6f4e37;
+        color: white;
+        transform: translateY(-3px);
+        box-shadow: 0 5px 15px rgba(111, 78, 55, 0.2);
+    }
+    
+    .menu-items {
+        padding: 30px;
+    }
+    
+    .category {
+        display: none;
+        animation: fadeIn 0.5s ease;
+    }
+    
+    .category.active {
+        display: block;
+    }
+    
+    .menu-item {
+        margin-bottom: 30px;
+        padding-bottom: 30px;
+        border-bottom: 1px dashed #e0d5c5;
+        opacity: 0;
+        transform: translateY(20px);
+        animation: itemAppear 0.6s ease forwards;
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+    }
+    
+    .item-info {
+        flex: 1;
+        padding-right: 20px;
+    }
+    
+    .item-header {
+        display: flex;
+        justify-content: space-between;
+        margin-bottom: 8px;
+        align-items: center;
+    }
+    
+    .item-name {
+        font-size: 1.5rem;
+        color: #3a1c00;
+        font-weight: 600;
+        font-family: 'Playfair Display', serif;
+    }
+    
+    .item-price {
+        font-size: 1.5rem;
+        color: #6f4e37;
+        font-weight: bold;
+        font-family: 'Montserrat', sans-serif;
+    }
+    
+    .item-desc {
+        color: #777;
+        line-height: 1.6;
+        margin-bottom: 10px;
+        font-family: 'Montserrat', sans-serif;
+    }
+    
+    .item-badge {
+        display: inline-block;
+        background: #d4a76a;
+        color: #3a1c00;
+        font-size: 0.8rem;
+        padding: 3px 12px;
+        border-radius: 15px;
+        font-weight: bold;
+        font-family: 'Montserrat', sans-serif;
+    }
+    
+    .item-image {
+        width: 120px;
+        height: 120px;
+        border-radius: 10px;
+        object-fit: cover;
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        transition: transform 0.3s ease;
+    }
+    
+    .item-image:hover {
+        transform: scale(1.05);
+    }
+    
+    .menu-footer {
+        background: #f5f2eb;
+        text-align: center;
+        padding: 20px;
+        color: #6f4e37;
+        font-style: italic;
+        border-top: 1px solid #e0d5c5;
+    }
+    
+    /* Popup Animation */
+    .popup-overlay {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.7);
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        z-index: 2000;
+        opacity: 0;
+        visibility: hidden;
+        transition: all 0.3s ease;
+    }
+    
+    .popup-overlay.active {
+        opacity: 1;
+        visibility: visible;
+    }
+    
+    .popup-content {
+        background: white;
+        padding: 30px;
+        border-radius: 15px;
+        max-width: 500px;
+        width: 90%;
+        text-align: center;
+        position: relative;
+        transform: scale(0.7);
+        opacity: 0;
+        transition: all 0.4s ease;
+        box-shadow: 0 15px 30px rgba(0, 0, 0, 0.2);
+    }
+    
+    .popup-overlay.active .popup-content {
+        transform: scale(1);
+        opacity: 1;
+    }
+    
+    .popup-title {
+        font-family: 'Playfair Display', serif;
+        color: #6f4e37;
+        margin-bottom: 15px;
+        font-size: 2rem;
+    }
+    
+    .popup-text {
+        margin-bottom: 25px;
+        line-height: 1.6;
+        color: #555;
+    }
+    
+    .popup-close {
+        position: absolute;
+        top: 15px;
+        right: 15px;
+        background: none;
+        border: none;
+        font-size: 1.5rem;
+        cursor: pointer;
+        color: #6f4e37;
+        transition: transform 0.3s ease;
+    }
+    
+    .popup-close:hover {
+        transform: rotate(90deg);
+    }
+    
+    .popup-btn {
+        display: inline-block;
+        background: #d4a76a;
+        color: #3a1c00;
+        padding: 12px 25px;
+        border-radius: 30px;
+        text-decoration: none;
+        font-weight: 600;
+        transition: all 0.3s ease;
+        border: 2px solid #d4a76a;
+    }
+    
+    .popup-btn:hover {
+        background: transparent;
+        color: #d4a76a;
+        transform: translateY(-3px);
+    }
+    
+    /* Animations */
+    @keyframes fadeIn {
+        from { opacity: 0; }
+        to { opacity: 1; }
+    }
+    
+    @keyframes itemAppear {
+        to { opacity: 1; transform: translateY(0); }
+    }
+    
+    /* Responsive adjustments */
+    @media (max-width: 768px) {
+        .menu-title {
+            font-size: 2.5rem;
+        }
+        
+        .category-btn {
+            padding: 8px 15px;
+            font-size: 1rem;
+        }
+        
+        .item-name, .item-price {
+            font-size: 1.3rem;
+        }
+        
+        .menu-item {
+            flex-direction: column;
+        }
+        
+        .item-image {
+            width: 100%;
+            height: 200px;
+            margin-top: 15px;
+        }
+        
+        .popup-content {
+            padding: 20px;
+        }
+        
+        .popup-title {
+            font-size: 1.5rem;
+        }
+    }
+</style>
+
+<div class="menu-page">
+    <div class="menu-header">
+        <h1 class="menu-title">Cafe House Menu</h1>
+        <p class="menu-subtitle">Serving premium coffee and delicious food since 2025</p>
+        <div class="menu-divider"></div>
+    </div>
+    
+    <div class="menu-container">
+        <div class="menu-categories">
+            <button class="category-btn active" data-category="coffee">Coffee</button>
+            <button class="category-btn" data-category="tea">Tea</button>
+            <button class="category-btn" data-category="pastries">Pastries</button>
+            <button class="category-btn" data-category="desserts">Desserts</button>
+            <button class="category-btn" data-category="sandwiches">Sandwiches</button>
+        </div>
+        
+        <div class="menu-items">
+            <!-- Coffee Category -->
+            <div class="category active" id="coffee">
+                <div class="menu-item" style="animation-delay: 0.1s">
+                    <div class="item-info">
+                        <div class="item-header">
+                            <h3 class="item-name">Hot Coffee</h3>
+                            <span class="item-price">₹50.00</span>
+                        </div>
+                        <p class="item-desc">Strong and bold, our signature espresso shot</p>
+                        <span class="item-badge">Most Popular</span>
+                    </div>
+                    <img src="https://images.unsplash.com/photo-1572442388796-11668a67e53d?ixlib=rb-4.0.3&auto=format&fit=crop&w=200&q=80" alt="Hot Coffee" class="item-image">
+                </div>
+                
+                <div class="menu-item" style="animation-delay: 0.2s">
+                    <div class="item-info">
+                        <div class="item-header">
+                            <h3 class="item-name">Cold Coffee</h3>
+                            <span class="item-price">₹80.00</span>
+                        </div>
+                        <p class="item-desc">Perfect balance of espresso, steamed milk, and foam</p>
+                    </div>
+                    <img src="{% static 'menu/images/coldcoffee.jpg' %}" alt="Cappuccino" class="item-image">
+                </div>
+                
+                <div class="menu-item" style="animation-delay: 0.3s">
+                    <div class="item-info">
+                        <div class="item-header">
+                            <h3 class="item-name">Café Latte</h3>
+                            <span class="item-price">₹90.00</span>
+                        </div>
+                        <p class="item-desc">Smooth espresso with steamed milk and light foam</p>
+                    </div>
+                    <img src="https://images.unsplash.com/photo-1561047029-3000c68339ca?ixlib=rb-4.0.3&auto=format&fit=crop&w=200&q=80" alt="Café Latte" class="item-image">
+                </div>
+                
+                <div class="menu-item" style="animation-delay: 0.4s">
+                    <div class="item-info">
+                        <div class="item-header">
+                            <h3 class="item-name">Cold Coffee</h3>
+                            <span class="item-price">₹120.00</span>
+                        </div>
+                        <p class="item-desc">Iced coffee with chocolate syrup, milk, and whipped cream</p>
+                        <span class="item-badge">New</span>
+                    </div>
+                    <img src="https://images.unsplash.com/photo-1461023058943-07fcbe16d735?ixlib=rb-4.0.3&auto=format&fit=crop&w=200&q=80" alt="Cold Coffee" class="item-image">
+                </div>
+            </div>
+            
+            <!-- Tea Category -->
+            <div class="category" id="tea">
+                <div class="menu-item" style="animation-delay: 0.1s">
+                    <div class="item-info">
+                        <div class="item-header">
+                            <h3 class="item-name">Black Tea</h3>
+                            <span class="item-price">₹30.00</span>
+                        </div>
+                        <p class="item-desc">Robust and full-bodied black tea blend</p>
+                    </div>
+                    <img src="https://images.unsplash.com/photo-1556679343-c7306c1976bc?ixlib=rb-4.0.3&auto=format&fit=crop&w=200&q=80" alt="Black Tea" class="item-image">
+                </div>
+                
+                <div class="menu-item" style="animation-delay: 0.2s">
+                    <div class="item-info">
+                        <div class="item-header">
+                            <h3 class="item-name">Milk Tea</h3>
+                            <span class="item-price">₹40.00</span>
+                        </div>
+                        <p class="item-desc">Sweet and creamy milk tea</p>
+                    </div>
+                    <img src="https://images.unsplash.com/photo-1564890369478-c89ca6d9cde9?ixlib=rb-4.0.3&auto=format&fit=crop&w=200&q=80" alt="Milk Tea" class="item-image">
+                </div>
+                
+                <div class="menu-item" style="animation-delay: 0.3s">
+                    <div class="item-info">
+                        <div class="item-header">
+                            <h3 class="item-name">Green Tea</h3>
+                            <span class="item-price">₹35.00</span>
+                        </div>
+                        <p class="item-desc">Light and refreshing with antioxidant properties</p>
+                        <span class="item-badge">Healthy Choice</span>
+                    </div>
+                    <img src="https://images.unsplash.com/photo-1544787219-7f47ccb76574?ixlib=rb-4.0.3&auto=format&fit=crop&w=200&q=80" alt="Green Tea" class="item-image">
+                </div>
+                
+                <div class="menu-item" style="animation-delay: 0.4s">
+                    <div class="item-info">
+                        <div class="item-header">
+                            <h3 class="item-name">Ginger Milk Tea</h3>
+                            <span class="item-price">₹50.00</span>
+                        </div>
+                        <p class="item-desc">Warming ginger tea with milk and honey</p>
+                    </div>
+                    <img src="{% static 'menu/images/teag.jpeg' %}" alt="Ginger Milk Tea" class="item-image">
+                </div>
+            </div>
+            
+            <!-- Pastries Category -->
+            <div class="category" id="pastries">
+                <div class="menu-item" style="animation-delay: 0.1s">
+                    <div class="item-info">
+                        <div class="item-header">
+                            <h3 class="item-name">Croissant</h3>
+                            <span class="item-price">₹60.00</span>
+                        </div>
+                        <p class="item-desc">Buttery, flaky, and freshly baked daily</p>
+                        <span class="item-badge">Customer Favorite</span>
+                    </div>
+                    <img src="{% static 'menu/images/croissants.jpg' %}" alt="Croissant" class="item-image">
+                </div>
+                
+                <div class="menu-item" style="animation-delay: 0.2s">
+                    <div class="item-info">
+                        <div class="item-header">
+                            <h3 class="item-name">Donut</h3>
+                            <span class="item-price">₹50.00</span>
+                        </div>
+                        <p class="item-desc">Sweet fried dough with various glazes</p>
+                    </div>
+                    <img src="https://images.unsplash.com/photo-1551106652-a5bcf4b29ab6?ixlib=rb-4.0.3&auto=format&fit=crop&w=200&q=80" alt="Donut" class="item-image">
+                </div>
+                
+                <div class="menu-item" style="animation-delay: 0.3s">
+                    <div class="item-info">
+                        <div class="item-header">
+                            <h3 class="item-name">Macarons</h3>
+                            <span class="item-price">₹200.00</span>
+                        </div>
+                        <p class="item-desc">French almond meringue cookies with ganache filling</p>
+                    </div>
+                    <img src="{% static 'menu/images/macrons.webp' %}" alt="Macarons" class="item-image">
+                </div>
+                
+                <div class="menu-item" style="animation-delay: 0.4s">
+                    <div class="item-info">
+                        <div class="item-header">
+                            <h3 class="item-name">Blueberry Muffin</h3>
+                            <span class="item-price">₹70.00</span>
+                        </div>
+                        <p class="item-desc">Moist muffin bursting with fresh blueberries</p>
+                    </div>
+                    <img src="{% static 'menu/images/muffin.webp' %} "alt="Blueberry Muffin" class="item-image">
+                </div>
+            </div>
+            
+            <!-- Desserts Category -->
+            <div class="category" id="desserts">
+                <div class="menu-item" style="animation-delay: 0.1s">
+                    <div class="item-info">
+                        <div class="item-header">
+                            <h3 class="item-name">Tiramisu</h3>
+                            <span class="item-price">₹180.00</span>
+                        </div>
+                        <p class="item-desc">Classic Italian dessert with espresso-soaked ladyfingers</p>
+                    </div>
+                    <img src="https://images.unsplash.com/photo-1571877227200-a0d98ea607e9?ixlib=rb-4.0.3&auto=format&fit=crop&w=200&q=80" alt="Tiramisu" class="item-image">
+                </div>
+                
+                <div class="menu-item" style="animation-delay: 0.2s">
+                    <div class="item-info">
+                        <div class="item-header">
+                            <h3 class="item-name">New York Cheesecake</h3>
+                            <span class="item-price">₹160.00</span>
+                        </div>
+                        <p class="item-desc">Creamy cheesecake with graham cracker crust</p>
+                        <span class="item-badge">Best Seller</span>
+                    </div>
+                    <img src="https://images.unsplash.com/photo-1524351199678-941a58a3df50?ixlib=rb-4.0.3&auto=format&fit=crop&w=200&q=80" alt="New York Cheesecake" class="item-image">
+                </div>
+                
+                <div class="menu-item" style="animation-delay: 0.3s">
+                    <div class="item-info">
+                        <div class="item-header">
+                            <h3 class="item-name">Chocolate Lava Cake</h3>
+                            <span class="item-price">₹190.00</span>
+                        </div>
+                        <p class="item-desc">Warm chocolate cake with molten center</p>
+                    </div>
+                    <img src="{% static 'menu/images/cake.jpg' %}" alt="Chocolate Lava Cake" class="item-image">
+                </div>
+            </div>
+            
+            <!-- Sandwiches Category -->
+            <div class="category" id="sandwiches">
+                <div class="menu-item" style="animation-delay: 0.1s">
+                    <div class="item-info">
+                        <div class="item-header">
+                            <h3 class="item-name">Classic Club Sandwich</h3>
+                            <span class="item-price">₹150.00</span>
+                        </div>
+                        <p class="item-desc">Triple-decker with turkey, bacon, lettuce, tomato, and mayo</p>
+                    </div>
+                    <img src="https://images.unsplash.com/photo-1606755962773-d324e0a13086?ixlib=rb-4.0.3&auto=format&fit=crop&w=200&q=80" alt="Classic Club Sandwich" class="item-image">
+                </div>
+                
+                <div class="menu-item" style="animation-delay: 0.2s">
+                    <div class="item-info">
+                        <div class="item-header">
+                            <h3 class="item-name">Veggie Sandwich</h3>
+                            <span class="item-price">₹120.00</span>
+                        </div>
+                        <p class="item-desc">Fresh vegetables with hummus on multigrain bread</p>
+                        <span class="item-badge">Vegetarian</span>
+                    </div>
+                    <img src="{% static 'menu/images/s.jpg' %}" alt="Veggie Sandwich" class="item-image">
+                </div>
+                
+                <div class="menu-item" style="animation-delay: 0.3s">
+                    <div class="item-info">
+                        <div class="item-header">
+                            <h3 class="item-name">Grilled Cheese Sandwich</h3>
+                            <span class="item-price">₹100.00</span>
+                        </div>
+                        <p class="item-desc">Toasted bread with melted cheese and herbs</p>
+                    </div>
+                    <img src="{% static 'menu/images/sand.jpg' %}" alt="Grilled Cheese Sandwich" class="item-image">
+                </div>
+            </div>
+        </div>
+        
+        <div class="menu-footer">
+            <p>All prices are in INR. 10% service charge may be added to parties of 6 or more</p>
+        </div>
+    </div>
+</div>
+
+<!-- Popup Offer -->
+<div class="popup-overlay" id="offerPopup">
+    <div class="popup-content">
+        <button class="popup-close">&times;</button>
+        <h2 class="popup-title">Special Offer!</h2>
+        <p class="popup-text">Get 15% off your first order when you spend over ₹500. Use code: <strong>WELCOME15</strong></p>
+        <a href="{% url 'contact' %}" class="popup-btn">Order Now</a>
+    </div>
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Category switching functionality
+        const categoryButtons = document.querySelectorAll('.category-btn');
+        const categories = document.querySelectorAll('.category');
+        
+        categoryButtons.forEach(button => {
+            button.addEventListener('click', function() {
+                const categoryId = this.getAttribute('data-category');
+                
+                // Update active button
+                categoryButtons.forEach(btn => btn.classList.remove('active'));
+                this.classList.add('active');
+                
+                // Show selected category
+                categories.forEach(category => {
+                    category.classList.remove('active');
+                    if (category.id === categoryId) {
+                        category.classList.add('active');
+                        
+                        // Animate items when category is shown
+                        const items = category.querySelectorAll('.menu-item');
+                        items.forEach((item, index) => {
+                            item.style.animationDelay = `${0.1 * (index + 1)}s`;
+                            item.style.animation = 'none';
+                            setTimeout(() => {
+                                item.style.animation = 'itemAppear 0.6s ease forwards';
+                            }, 50);
+                        });
+                    }
+                });
+            });
+        });
+        
+        // Animate items on page load
+        const initialItems = document.querySelectorAll('.category.active .menu-item');
+        initialItems.forEach((item, index) => {
+            item.style.animationDelay = `${0.1 * (index + 1)}s`;
+        });
+        
+        // Popup functionality
+        const popup = document.getElementById('offerPopup');
+        const closePopup = document.querySelector('.popup-close');
+        
+        // Show popup after 3 seconds
+        setTimeout(function() {
+            popup.classList.add('active');
+        }, 3000);
+        
+        // Close popup when close button is clicked
+        closePopup.addEventListener('click', function() {
+            popup.classList.remove('active');
+        });
+        
+        // Close popup when clicking outside the content
+        popup.addEventListener('click', function(e) {
+            if (e.target === popup) {
+                popup.classList.remove('active');
+            }
+        });
+    });
+</script>
+{% endblock %}
